@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.p2pmsgcore</groupId>
+  <artifactId>p2pmsgcore-java</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <description>Java Panama FFI bindings for the P2Pmsgcore native library</description>
+
+  <properties>
+    <maven.compiler.release>22</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+
+      <!-- Compile with enable-preview if needed; at minimum release 22 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <release>22</release>
+        </configuration>
+      </plugin>
+
+      <!-- Pass enable-native-access for tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+        <configuration>
+          <argLine>--enable-native-access=ALL-UNNAMED</argLine>
+          <systemPropertyVariables>
+            <!-- Adjust to the directory that holds P2Pmsgcore.dll -->
+            <java.library.path>${project.basedir}/../native/build</java.library.path>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+
+      <!-- Executable jar with SmokeTest as main class -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.1</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>com.p2pmsgcore.SmokeTest</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+</project>

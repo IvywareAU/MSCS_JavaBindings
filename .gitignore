@@ -1,0 +1,18 @@
+# Maven / Java build output
+target/
+**/target/
+*.class
+
+# JVM crash dumps
+hs_err_pid*.log
+replay_pid*.log
+
+# jextract scratch (generated on demand; see each project README, Step 3)
+jx_dump.txt
+jx_filter.args
+
+# IDE / tooling caches
+.vs/
+.idea/
+.understand-anything/
+*.iml
