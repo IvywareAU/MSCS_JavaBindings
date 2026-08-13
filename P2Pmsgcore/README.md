@@ -18,28 +18,48 @@ Exposes the four core C++ classes to Java using the Panama Foreign Function Inte
 | Java        | 22+      | `java --version`                   |
 | jextract    | 22+      | see below for install              |
 | MSVC        | 2019+    | or compatible; builds the DLL      |
-| Visual Studio solution | existing | `P2Pmsgcore(2022).vcxproj` |
+| A P2Pmsgcore checkout | existing | supplies the C wrapper sources **and** the header jextract reads |
+
+Throughout this document `<P2Pmsgcore>` means the root of that checkout — the
+directory holding `P2Pmsgcore(2022).vcxproj` and `P2Pmsgcore_c.h`.
 
 ---
 
-## Step 1 – Add the C wrapper to the DLL build
+## Step 1 – Build the DLL
 
-Copy `native\P2Pmsgcore_c.h`, `native\P2Pmsgcore_c.cpp` **and
-`native\P2Pmsgcore_c_u8.cpp`** into the `P2Pmsgcore` source directory
-alongside the existing `.cpp` files, then add them to
-`P2Pmsgcore(2022).vcxproj`. (`_u8.cpp` provides the UTF-8 entry points — see
-[String encoding](#string-encoding); on the Linux port these three files are
-already compiled into `libp2pmsgcore.so` by `P2Pmsgcore/CMakeLists.txt`.)
+**The C wrapper lives in P2Pmsgcore, not here.** `P2Pmsgcore_c.h`,
+`P2Pmsgcore_c.cpp` and `P2Pmsgcore_c_u8.cpp` are ordinary sources of that
+project, listed in both `P2Pmsgcore(2022).vcxproj` and its `CMakeLists.txt`, so
+they are compiled into `P2Pmsgcore.dll` and `libp2pmsgcore.so` by an ordinary
+build. There is nothing to copy and nothing to add to a project file.
+
+> This tree used to carry its own copy under `native\`, and Step 1 used to be
+> "copy these three files into P2Pmsgcore". That copy was **deleted on
+> 2026-08-14**: an ABI definition duplicated across two repositories drifts, and
+> this one already had — the copy here sat several fixes behind the library it
+> described, including the handle registry every entry point now depends on.
+> The header in `<P2Pmsgcore>` is the only copy, and it is the one that is
+> compiled, so it cannot silently disagree with the DLL you load.
 
 In the project's **Preprocessor Definitions** make sure
-`P2Pmsgcore_EXPORTS` is defined (it already is for the DLL build target).
+`P2Pmsgcore_EXPORTS` is defined (it already is for the DLL build target; the
+static `DebugLib`/`ReleaseLib` configurations define `P2Pmsgcore_STATIC`
+instead, which expands `P2PC_API` to nothing — those cannot be loaded by
+Panama, which needs a shared library).
 
-Rebuild the DLL:
+Build the DLL:
 ```
+cd <P2Pmsgcore>
 msbuild P2Pmsgcore(2022).vcxproj /p:Configuration=Release /p:Platform=x64
 ```
-The output `P2Pmsgcore.dll` goes into the build output folder (e.g.
-`x64\Release\`).
+The output `P2Pmsgcore.dll` goes into the build output folder
+(`out\x64\Release\`).
+
+Confirm the C surface is actually exported before going further — a DLL that
+built fine still exports nothing if `P2Pmsgcore_EXPORTS` was missing:
+```bat
+dumpbin /exports out\x64\Release\P2Pmsgcore.dll | findstr p2paddr_create
+```
 
 ---
 
@@ -58,16 +78,23 @@ Modern jextract (22+) names the header class `<header>_h` and, run bare, also
 emits every declaration reachable through `<stdint.h>`/`<wchar.h>` (~40 noise
 files: `FILE`, `stat`, `tm`, setjmp buffers, …). To get a single clean class
 named `P2Pmsgcore_c` (matching the wrappers), **filter the includes to this
-header and set the class name**. From the `native\` directory:
+header and set the class name**.
+
+Run this from `<P2Pmsgcore>`, the directory holding the header — jextract reads
+it straight out of the library's own source tree, which is what keeps the
+bindings and the DLL from disagreeing. `<bindings>` is this repository's
+`P2Pmsgcore\` directory.
 
 ```bat
+cd <P2Pmsgcore>
+
 :: 1) dump every include option, then keep only the ones from THIS header
 jextract --dump-includes jx_dump.txt P2Pmsgcore_c.h
 findstr /R "^--include-" jx_dump.txt | findstr "P2Pmsgcore_c.h" > jx_filter.args
 
 :: 2) generate, filtered, with the class name the wrappers expect
 jextract ^
-  --output ..\java\src\main\java ^
+  --output <bindings>\java\src\main\java ^
   --target-package com.p2pmsgcore.native_ ^
   --header-class-name P2Pmsgcore_c ^
   --library P2Pmsgcore ^
@@ -75,9 +102,13 @@ jextract ^
   P2Pmsgcore_c.h
 ```
 
+`jx_dump.txt` and `jx_filter.args` are scratch output written into the
+P2Pmsgcore checkout; delete them afterwards rather than committing them.
+
 This **replaces** `...\native_\P2Pmsgcore_c.java` (+ a `P2Pmsgcore_c$shared.java`
-split class) with the authoritative generated version — all 70 functions incl.
-the 20 `_u8` twins.
+split class) with the authoritative generated version — all **74** entry points
+incl. the **21** `_u8` twins (measured against the built DLL on 2026-08-14; the
+figures 70/20 quoted here previously were stale).
 
 > **Note (no-arg functions):** the header declares `p2paddr_create(void)` /
 > `p2peermsg_create(void)` with an explicit `void`. Empty `()` in C means an
@@ -109,10 +140,14 @@ mvn compile
 
 ```bat
 java --enable-native-access=ALL-UNNAMED ^
-     -Djava.library.path=..\native\build ^
+     -Djava.library.path=<P2Pmsgcore>\out\x64\Release ^
      -cp target\classes ^
      com.p2pmsgcore.SmokeTest
 ```
+
+`java.library.path` points at the P2Pmsgcore build output — the directory the
+DLL from Step 1 was written to. `Msgcore.dll` must be resolvable from there too,
+since `P2Pmsgcore.dll` imports it.
 
 Expected output:
 ```
@@ -135,11 +170,17 @@ Smoke test passed.
 
 ## File layout
 
+The C wrapper is **not** in this repository — it is part of P2Pmsgcore:
+
+```
+<P2Pmsgcore>\
+├── P2Pmsgcore_c.h              ← extern "C" wrapper header (jextract reads this)
+├── P2Pmsgcore_c.cpp            ← extern "C" wrapper implementation
+└── P2Pmsgcore_c_u8.cpp         ← UTF-8 (_u8) entry points
+```
+
 ```
 MSCS_JavaBindings\P2Pmsgcore\
-├── native\
-│   ├── P2Pmsgcore_c.h          ← extern "C" wrapper header (jextract reads this)
-│   └── P2Pmsgcore_c.cpp        ← extern "C" wrapper implementation
 └── java\
     ├── pom.xml
     └── src\main\java\com\p2pmsgcore\
@@ -198,7 +239,7 @@ the conversion transparently.
 `wchar_t` is 2 bytes on Windows (UTF-16) but 4 bytes on Linux (UTF-32), so the
 `wchar_t` entry points are **not** portable across a Windows DLL and the Linux
 `libp2pmsgcore.so`. Each string-bearing C function therefore has a `*_u8` twin
-(in `native\P2Pmsgcore_c_u8.cpp`) that takes/returns **UTF-8 `char*`**, converting
+(in `<P2Pmsgcore>\P2Pmsgcore_c_u8.cpp`) that takes/returns **UTF-8 `char*`**, converting
 at the boundary. jextract regenerates the `_u8` bindings automatically from the
 header, and the Java wrappers expose them:
 
