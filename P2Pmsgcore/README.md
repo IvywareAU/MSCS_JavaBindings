@@ -441,5 +441,9 @@ MSCS_JavaBindings\P2Pmsgcore\
 
 ## License
 
-Copyright 2026 Khrustal & Mann, MELBOURNE, VICTORIA, AUSTRALIA, 3000.
-Licensed under the Apache License, Version 2.0.
+Copyright © 2026 Khrustal & Mann, MELBOURNE, VICTORIA, AUSTRALIA, 3000.
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](../LICENSE) for the
+full text and [NOTICE](../NOTICE) for what it does and does not cover — in
+particular the jextract output under `native_\`, which carries no per-file header
+because it is replaced wholesale every time the bindings are regenerated.

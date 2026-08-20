@@ -168,3 +168,12 @@ C:\_Dev\_ClaudeCode\MSCS_JavaBimdings\Msgcore\
 | `UnsatisfiedLinkError: unresolved symbol msgcore_mgr_create` | Rebuild the DLL with `Msgcore_c.cpp` included; check `dumpbin /exports Msgcore.dll` |
 | Crash on first call | MFC requires the app to call `AfxWinInit`; if testing outside an MFC app, add an `AfxWinInit` call or link against the shared MFC DLL |
 | Wide string garbage | Ensure the JVM and DLL agree on `wchar_t` being 2 bytes (guaranteed on Windows) |
+
+---
+
+## License
+
+Copyright © 2026 Khrustal & Mann, MELBOURNE, VICTORIA, AUSTRALIA, 3000.
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](../LICENSE) for the full
+text and [NOTICE](../NOTICE) for what it does and does not cover.

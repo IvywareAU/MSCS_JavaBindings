@@ -141,3 +141,12 @@ From within Claude Code, simply type:
 ```
 
 This finds the knowledge graph, starts the Vite server, and prints the tokenized URL automatically — no PowerShell required.
+
+---
+
+## License
+
+Copyright © 2026 Khrustal & Mann, MELBOURNE, VICTORIA, AUSTRALIA, 3000.
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](../LICENSE) for the full
+text and [NOTICE](../NOTICE) for what it does and does not cover.

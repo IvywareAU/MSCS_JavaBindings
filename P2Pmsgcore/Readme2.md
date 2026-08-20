@@ -38,3 +38,12 @@ described. See `README.md` Step 1.
 2. Run `jextract` as shown in `README.md`, against the header in that checkout
    (replaces the hand-written stub with the real one)
 3. `mvn compile` → run `SmokeTest` with `-Djava.library.path=<dll dir>`
+
+---
+
+## License
+
+Copyright © 2026 Khrustal & Mann, MELBOURNE, VICTORIA, AUSTRALIA, 3000.
+
+Licensed under the Apache License, Version 2.0. See [LICENSE](../LICENSE) for the full
+text and [NOTICE](../NOTICE) for what it does and does not cover.
