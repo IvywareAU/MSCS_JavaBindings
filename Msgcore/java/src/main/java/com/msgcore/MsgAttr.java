@@ -47,14 +47,14 @@ public class MsgAttr implements AutoCloseable {
     public boolean exists(String name) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            return Msgcore_c.msgcore_attr_exists(handle, Msgcore_c.toWStr(a, name)) != 0;
+            return Msgcore_c.msgcore_attr_exists(handle, NativeStrings.toWStr(a, name)) != 0;
         }
     }
 
     public MsgField selectItem(String name) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            MemorySegment h = Msgcore_c.msgcore_attr_select_item(handle, Msgcore_c.toWStr(a, name));
+            MemorySegment h = Msgcore_c.msgcore_attr_select_item(handle, NativeStrings.toWStr(a, name));
             if (h.equals(MemorySegment.NULL)) throw new RuntimeException("attr item not found: " + name);
             return new MsgField(h);
         }
@@ -63,7 +63,7 @@ public class MsgAttr implements AutoCloseable {
     public MsgField declareInt(String name, int value, boolean update) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            MemorySegment h = Msgcore_c.msgcore_attr_declare_int(handle, Msgcore_c.toWStr(a, name), value, update ? 1 : 0);
+            MemorySegment h = Msgcore_c.msgcore_attr_declare_int(handle, NativeStrings.toWStr(a, name), value, update ? 1 : 0);
             if (h.equals(MemorySegment.NULL)) throw new RuntimeException("attr declareInt failed");
             return new MsgField(h);
         }
@@ -72,7 +72,7 @@ public class MsgAttr implements AutoCloseable {
     public MsgField declareDouble(String name, double value, boolean update) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            MemorySegment h = Msgcore_c.msgcore_attr_declare_double(handle, Msgcore_c.toWStr(a, name), value, update ? 1 : 0);
+            MemorySegment h = Msgcore_c.msgcore_attr_declare_double(handle, NativeStrings.toWStr(a, name), value, update ? 1 : 0);
             if (h.equals(MemorySegment.NULL)) throw new RuntimeException("attr declareDouble failed");
             return new MsgField(h);
         }
@@ -82,7 +82,7 @@ public class MsgAttr implements AutoCloseable {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
             MemorySegment h = Msgcore_c.msgcore_attr_declare_wstr(
-                handle, Msgcore_c.toWStr(a, name), Msgcore_c.toWStr(a, value), update ? 1 : 0);
+                handle, NativeStrings.toWStr(a, name), NativeStrings.toWStr(a, value), update ? 1 : 0);
             if (h.equals(MemorySegment.NULL)) throw new RuntimeException("attr declareString failed");
             return new MsgField(h);
         }
@@ -91,7 +91,7 @@ public class MsgAttr implements AutoCloseable {
     public boolean delete(String name) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            return Msgcore_c.msgcore_attr_delete(handle, Msgcore_c.toWStr(a, name)) != 0;
+            return Msgcore_c.msgcore_attr_delete(handle, NativeStrings.toWStr(a, name)) != 0;
         }
     }
 

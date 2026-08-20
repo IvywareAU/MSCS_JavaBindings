@@ -65,7 +65,7 @@ public class MsgVect implements AutoCloseable {
 
     public String getString(int elem) {
         checkOpen();
-        return Msgcore_c.fromWStr(Msgcore_c.msgcore_vect_get_wstr(handle, elem));
+        return NativeStrings.fromWStr(Msgcore_c.msgcore_vect_get_wstr(handle, elem));
     }
 
     /**

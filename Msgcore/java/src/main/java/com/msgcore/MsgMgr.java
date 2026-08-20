@@ -65,7 +65,7 @@ public class MsgMgr implements AutoCloseable {
      */
     public MsgMgr(String filename) {
         try (Arena a = Arena.ofConfined()) {
-            handle = Msgcore_c.msgcore_mgr_open_file(Msgcore_c.toWStr(a, filename));
+            handle = Msgcore_c.msgcore_mgr_open_file(NativeStrings.toWStr(a, filename));
         }
         if (handle.equals(MemorySegment.NULL)) throw new RuntimeException("Cannot open: " + filename);
     }
@@ -85,14 +85,14 @@ public class MsgMgr implements AutoCloseable {
     public boolean load(String filename) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            return Msgcore_c.msgcore_mgr_load(handle, Msgcore_c.toWStr(a, filename)) != 0;
+            return Msgcore_c.msgcore_mgr_load(handle, NativeStrings.toWStr(a, filename)) != 0;
         }
     }
 
     public boolean save(String filename) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            return Msgcore_c.msgcore_mgr_save(handle, Msgcore_c.toWStr(a, filename)) != 0;
+            return Msgcore_c.msgcore_mgr_save(handle, NativeStrings.toWStr(a, filename)) != 0;
         }
     }
 
@@ -109,7 +109,7 @@ public class MsgMgr implements AutoCloseable {
     public boolean rename(String newName) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            return Msgcore_c.msgcore_mgr_rename(handle, Msgcore_c.toWStr(a, newName)) != 0;
+            return Msgcore_c.msgcore_mgr_rename(handle, NativeStrings.toWStr(a, newName)) != 0;
         }
     }
 
@@ -119,12 +119,12 @@ public class MsgMgr implements AutoCloseable {
 
     public String getFilename() {
         checkOpen();
-        return Msgcore_c.fromWStr(Msgcore_c.msgcore_mgr_get_filename(handle));
+        return NativeStrings.fromWStr(Msgcore_c.msgcore_mgr_get_filename(handle));
     }
 
     public String getRootname() {
         checkOpen();
-        return Msgcore_c.fromWStr(Msgcore_c.msgcore_mgr_get_rootname(handle));
+        return NativeStrings.fromWStr(Msgcore_c.msgcore_mgr_get_rootname(handle));
     }
 
     public boolean isDirty() {
@@ -155,6 +155,13 @@ public class MsgMgr implements AutoCloseable {
      * Returns a MsgField copy-view of this manager's root item.
      * The returned MsgField must be closed independently.
      */
+    /**
+     * The manager's root as a <b>DETACHED deep copy</b>. Safe to read and safe to
+     * hold across mutations — and <b>writes through it go nowhere</b>. Every
+     * convenience method on this class used to route through here, which meant
+     * every declare made from Java was silently discarded; they go through
+     * {@link #root()} now.
+     */
     public MsgField asField() {
         checkOpen();
         MemorySegment h = Msgcore_c.msgcore_mgr_as_field(handle);
@@ -162,36 +169,61 @@ public class MsgMgr implements AutoCloseable {
         return new MsgField(h);
     }
 
+    /**
+     * The manager's root as a <b>LIVE</b> handle: declares through it reach the
+     * tree and survive {@code save()}. This is the accessor a write path wants.
+     * See {@link MsgField#child} for the invalidation rule that comes with it.
+     */
+    public MsgField root() {
+        checkOpen();
+        MemorySegment h = Msgcore_c.msgcore_mgr_root(handle);
+        if (h.equals(MemorySegment.NULL)) throw new RuntimeException("msgcore_mgr_root failed");
+        return new MsgField(h);
+    }
+
+    /** Resolves a positional handle ({@link MsgField#p2pos}) back to a live field. */
+    public MsgField fromP2pos(long pos) {
+        checkOpen();
+        MemorySegment h = Msgcore_c.msgcore_mgr_p2pos2field(handle, pos);
+        return h.equals(MemorySegment.NULL) ? null : new MsgField(h);
+    }
+
+    /** The full path of a positional handle, or {@code null} if it does not resolve. */
+    public String pathOf(long pos) {
+        checkOpen();
+        return NativeStrings.fromWStr(Msgcore_c.msgcore_mgr_p2pos2path(handle, pos));
+    }
+
     // ------------------------------------------------------------------
     // Convenience navigation (shortcut over asField())
     // ------------------------------------------------------------------
 
     public MsgField selectItem(String name) {
-        try (MsgField root = asField()) {
+        try (MsgField root = root()) {
             return root.selectItem(name);
         }
     }
 
     public boolean exists(String name) {
-        try (MsgField root = asField()) {
+        try (MsgField root = root()) {
             return root.exists(name);
         }
     }
 
     public MsgField declareInt(String name, int value, boolean update) {
-        try (MsgField root = asField()) {
+        try (MsgField root = root()) {
             return root.declareInt(name, value, update);
         }
     }
 
     public MsgField declareString(String name, String value, boolean update) {
-        try (MsgField root = asField()) {
+        try (MsgField root = root()) {
             return root.declareString(name, value, update);
         }
     }
 
     public MsgCurs cursor() {
-        try (MsgField root = asField()) {
+        try (MsgField root = root()) {
             return root.cursor();
         }
     }

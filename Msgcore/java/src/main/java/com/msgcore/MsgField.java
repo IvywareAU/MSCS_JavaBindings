@@ -62,11 +62,52 @@ public class MsgField implements AutoCloseable {
     // Navigation
     // ------------------------------------------------------------------
 
-    /** Returns a new MsgField for the named child item (caller owns it). */
+    /**
+     * The named child, as a <b>LIVE</b> handle aliasing the node in the manager's
+     * heap — declares, renames and retypes through it reach the tree and are
+     * visible to {@code save()}.
+     *
+     * <p>Use this, not {@link #selectItem}, for anything that writes.
+     *
+     * <p><b>A live handle does not survive a mutation.</b> Any call that can grow
+     * the heap may relocate the base image, and a handle taken before such a call
+     * must not be used after it. Re-resolve per operation, or hold
+     * {@link #p2pos()} — a heap offset rather than an address, so it still denotes
+     * the same node after a relocation. It is not an identity: delete the node and
+     * the offset can be handed out again, so a stale one resolves to whatever now
+     * occupies that block rather than failing. Obtain, use, discard.
+     *
+     * @return the child, or {@code null} if there is no such child
+     */
+    public MsgField child(String name) {
+        checkOpen();
+        try (Arena a = Arena.ofConfined()) {
+            MemorySegment h = Msgcore_c.msgcore_field_child(handle, NativeStrings.toWStr(a, name));
+            return h.equals(MemorySegment.NULL) ? null : new MsgField(h);
+        }
+    }
+
+    /**
+     * The field's stable positional handle — a heap offset, and the natural inode
+     * number. 0 for an unaddressable (standalone) field. See {@link #child} for
+     * why this, and not a field handle, is the thing to hold across a mutation.
+     */
+    public long p2pos() {
+        checkOpen();
+        return Msgcore_c.msgcore_field_get_p2pos(handle);
+    }
+
+    /**
+     * Returns a new MsgField for the named child item (caller owns it).
+     *
+     * <p><b>DETACHED: this is a deep copy, and writes through it never reach the
+     * tree.</b> It is safe to read and safe to keep across mutations, which is what
+     * it is for. To modify anything, use {@link #child} instead.
+     */
     public MsgField selectItem(String name) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            MemorySegment h = Msgcore_c.msgcore_field_select_item(handle, Msgcore_c.toWStr(a, name));
+            MemorySegment h = Msgcore_c.msgcore_field_select_item(handle, NativeStrings.toWStr(a, name));
             if (h.equals(MemorySegment.NULL)) throw new RuntimeException("item not found: " + name);
             return new MsgField(h);
         }
@@ -75,14 +116,14 @@ public class MsgField implements AutoCloseable {
     public boolean exists(String name) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            return Msgcore_c.msgcore_field_exists(handle, Msgcore_c.toWStr(a, name)) != 0;
+            return Msgcore_c.msgcore_field_exists(handle, NativeStrings.toWStr(a, name)) != 0;
         }
     }
 
     public boolean deleteItem(String name) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            return Msgcore_c.msgcore_field_delete_item(handle, Msgcore_c.toWStr(a, name)) != 0;
+            return Msgcore_c.msgcore_field_delete_item(handle, NativeStrings.toWStr(a, name)) != 0;
         }
     }
 
@@ -98,7 +139,7 @@ public class MsgField implements AutoCloseable {
     public MsgField declareInt(String name, int value, boolean update) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            MemorySegment h = Msgcore_c.msgcore_field_declare_int(handle, Msgcore_c.toWStr(a, name), value, update ? 1 : 0);
+            MemorySegment h = Msgcore_c.msgcore_field_declare_int(handle, NativeStrings.toWStr(a, name), value, update ? 1 : 0);
             if (h.equals(MemorySegment.NULL)) throw new RuntimeException("declareInt failed");
             return new MsgField(h);
         }
@@ -107,7 +148,7 @@ public class MsgField implements AutoCloseable {
     public MsgField declareLong(String name, long value, boolean update) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            MemorySegment h = Msgcore_c.msgcore_field_declare_int64(handle, Msgcore_c.toWStr(a, name), value, update ? 1 : 0);
+            MemorySegment h = Msgcore_c.msgcore_field_declare_int64(handle, NativeStrings.toWStr(a, name), value, update ? 1 : 0);
             if (h.equals(MemorySegment.NULL)) throw new RuntimeException("declareLong failed");
             return new MsgField(h);
         }
@@ -116,7 +157,7 @@ public class MsgField implements AutoCloseable {
     public MsgField declareDouble(String name, double value, boolean update) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            MemorySegment h = Msgcore_c.msgcore_field_declare_double(handle, Msgcore_c.toWStr(a, name), value, update ? 1 : 0);
+            MemorySegment h = Msgcore_c.msgcore_field_declare_double(handle, NativeStrings.toWStr(a, name), value, update ? 1 : 0);
             if (h.equals(MemorySegment.NULL)) throw new RuntimeException("declareDouble failed");
             return new MsgField(h);
         }
@@ -125,7 +166,7 @@ public class MsgField implements AutoCloseable {
     public MsgField declareBool(String name, boolean value, boolean update) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            MemorySegment h = Msgcore_c.msgcore_field_declare_bool(handle, Msgcore_c.toWStr(a, name), value ? 1 : 0, update ? 1 : 0);
+            MemorySegment h = Msgcore_c.msgcore_field_declare_bool(handle, NativeStrings.toWStr(a, name), value ? 1 : 0, update ? 1 : 0);
             if (h.equals(MemorySegment.NULL)) throw new RuntimeException("declareBool failed");
             return new MsgField(h);
         }
@@ -135,7 +176,7 @@ public class MsgField implements AutoCloseable {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
             MemorySegment h = Msgcore_c.msgcore_field_declare_wstr(
-                handle, Msgcore_c.toWStr(a, name), Msgcore_c.toWStr(a, value), update ? 1 : 0);
+                handle, NativeStrings.toWStr(a, name), NativeStrings.toWStr(a, value), update ? 1 : 0);
             if (h.equals(MemorySegment.NULL)) throw new RuntimeException("declareString failed");
             return new MsgField(h);
         }
@@ -147,7 +188,7 @@ public class MsgField implements AutoCloseable {
 
     public String getName() {
         checkOpen();
-        return Msgcore_c.fromWStr(Msgcore_c.msgcore_field_get_name(handle));
+        return NativeStrings.fromWStr(Msgcore_c.msgcore_field_get_name(handle));
     }
 
     // ------------------------------------------------------------------
@@ -211,13 +252,13 @@ public class MsgField implements AutoCloseable {
 
     public String getString() {
         checkOpen();
-        return Msgcore_c.fromWStr(Msgcore_c.msgcore_field_get_wstr(handle));
+        return NativeStrings.fromWStr(Msgcore_c.msgcore_field_get_wstr(handle));
     }
 
     public void setString(String value) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            Msgcore_c.msgcore_field_set_wstr(handle, Msgcore_c.toWStr(a, value));
+            Msgcore_c.msgcore_field_set_wstr(handle, NativeStrings.toWStr(a, value));
         }
     }
 
@@ -289,5 +330,76 @@ public class MsgField implements AutoCloseable {
         if (closed) return "MsgField[closed]";
         String name = getName();
         return "MsgField[" + (name != null ? name : "<unnamed>") + "]";
+    }
+
+    // ------------------------------------------------------------------
+    // UTF-8 (portable) surface
+    // ------------------------------------------------------------------
+    //  wchar_t is 16 bits on Windows and 32 on Linux, so the wide entry points
+    //  above cannot carry a string portably through an FFI. Every string-bearing
+    //  function has a _u8 twin that takes and returns UTF-8 and is ABI-identical
+    //  on both platforms -- 65 of them, none of which the bindings had until
+    //  2026-08-20. Prefer these in anything that has to run on both.
+
+    /** {@link #child} over the UTF-8 {@code _u8} C API. */
+    public MsgField childUtf8(String name) {
+        checkOpen();
+        try (Arena a = Arena.ofConfined()) {
+            MemorySegment h = Msgcore_c.msgcore_field_child_u8(handle, NativeStrings.toU8(a, name));
+            return h.equals(MemorySegment.NULL) ? null : new MsgField(h);
+        }
+    }
+
+    /** {@link #exists} over the UTF-8 {@code _u8} C API. */
+    public boolean existsUtf8(String name) {
+        checkOpen();
+        try (Arena a = Arena.ofConfined()) {
+            return Msgcore_c.msgcore_field_exists_u8(handle, NativeStrings.toU8(a, name)) != 0;
+        }
+    }
+
+    /** {@link #declareInt} over the UTF-8 {@code _u8} C API. */
+    public MsgField declareIntUtf8(String name, int value, boolean update) {
+        checkOpen();
+        try (Arena a = Arena.ofConfined()) {
+            MemorySegment h = Msgcore_c.msgcore_field_declare_int_u8(
+                    handle, NativeStrings.toU8(a, name), value, update ? 1 : 0);
+            if (h.equals(MemorySegment.NULL)) throw new RuntimeException("declareIntUtf8 failed");
+            return new MsgField(h);
+        }
+    }
+
+    /** {@link #declareDouble} over the UTF-8 {@code _u8} C API. */
+    public MsgField declareDoubleUtf8(String name, double value, boolean update) {
+        checkOpen();
+        try (Arena a = Arena.ofConfined()) {
+            MemorySegment h = Msgcore_c.msgcore_field_declare_double_u8(
+                    handle, NativeStrings.toU8(a, name), value, update ? 1 : 0);
+            if (h.equals(MemorySegment.NULL)) throw new RuntimeException("declareDoubleUtf8 failed");
+            return new MsgField(h);
+        }
+    }
+
+    /** {@link #declareString} over the UTF-8 {@code _u8} C API - name AND value. */
+    public MsgField declareStringUtf8(String name, String value, boolean update) {
+        checkOpen();
+        try (Arena a = Arena.ofConfined()) {
+            MemorySegment h = Msgcore_c.msgcore_field_declare_wstr_u8(
+                    handle, NativeStrings.toU8(a, name), NativeStrings.toU8(a, value), update ? 1 : 0);
+            if (h.equals(MemorySegment.NULL)) throw new RuntimeException("declareStringUtf8 failed");
+            return new MsgField(h);
+        }
+    }
+
+    /** This field's name, decoded from UTF-8. */
+    public String getNameUtf8() {
+        checkOpen();
+        return NativeStrings.fromU8(Msgcore_c.msgcore_field_get_name_u8(handle));
+    }
+
+    /** This field's string value, decoded from UTF-8. */
+    public String getStringUtf8() {
+        checkOpen();
+        return NativeStrings.fromU8(Msgcore_c.msgcore_field_get_wstr_u8(handle));
     }
 }

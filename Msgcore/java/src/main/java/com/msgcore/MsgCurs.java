@@ -68,7 +68,7 @@ public class MsgCurs implements AutoCloseable, Iterable<MsgField> {
     public boolean gotoItem(String name) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            return Msgcore_c.msgcore_curs_goto_name(handle, Msgcore_c.toWStr(a, name)) != 0;
+            return Msgcore_c.msgcore_curs_goto_name(handle, NativeStrings.toWStr(a, name)) != 0;
         }
     }
 
@@ -97,7 +97,7 @@ public class MsgCurs implements AutoCloseable, Iterable<MsgField> {
     /** Returns the current element's name (no allocation). */
     public String currentName() {
         checkOpen();
-        return Msgcore_c.fromWStr(Msgcore_c.msgcore_curs_get_name(handle));
+        return NativeStrings.fromWStr(Msgcore_c.msgcore_curs_get_name(handle));
     }
 
     /**

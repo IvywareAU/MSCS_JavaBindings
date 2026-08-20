@@ -54,7 +54,7 @@ public class MsgList implements AutoCloseable {
     public void addTail(String value) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            Msgcore_c.msgcore_list_add_tail_wstr(handle, Msgcore_c.toWStr(a, value));
+            Msgcore_c.msgcore_list_add_tail_wstr(handle, NativeStrings.toWStr(a, value));
         }
     }
 
@@ -67,7 +67,7 @@ public class MsgList implements AutoCloseable {
     public void addHead(String value) {
         checkOpen();
         try (Arena a = Arena.ofConfined()) {
-            Msgcore_c.msgcore_list_add_head_wstr(handle, Msgcore_c.toWStr(a, value));
+            Msgcore_c.msgcore_list_add_head_wstr(handle, NativeStrings.toWStr(a, value));
         }
     }
 
