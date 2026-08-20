@@ -179,11 +179,6 @@ the string. Both trees use `JAVA_SHORT_UNALIGNED` now.
   `recurs` 16, `attr` 14, `desc` 11, and 58 of the 163 are `_u8` twins of methods
   whose wide form *is* wrapped.
 
-This README used to be something else entirely: a transcript of an `/understand`
-dashboard session, complete with a tokenised `127.0.0.1` URL, plugin cache paths
-and advice about ngrok. None of it described the bindings, and it was published to
-GitHub on 2026-08-20 before being replaced.
-
 ---
 
 ## License
