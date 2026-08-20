@@ -1,13 +1,82 @@
 # P2Pmsgcore – Java Panama FFI Bindings
 
-Exposes the four core C++ classes to Java using the Panama Foreign Function Interface (Java 22+).
+Exposes P2Pmsgcore's flat `extern "C"` surface to Java through the Panama Foreign
+Function Interface (Java 22+), with hand-written wrappers over the generated layer.
 
 | C++ class      | Java wrapper          | Purpose                            |
 |----------------|-----------------------|------------------------------------|
 | `P2Paddr`      | `P2PAddr`             | P2P virtual-network address string |
 | `P2PeerMsg`    | `P2PMsg`              | Addressed message with payload     |
 | `P2PeerConWsa` | `P2PeerConWsa`        | Async TCP/IP connection (WSA/IOCP) |
-| `P2PeerHub`    | `P2PeerHub`           | Message routing hub                |
+| `P2PeerHub`    | `P2PeerHub`           | Message routing hub, authentication, receive sink |
+| —              | `P2Pmsgcore`          | Process lifecycle (`startup` / `cleanup`) |
+| —              | `ArmResult`, `IdResult` | The two result enums the ABI returns as `int` |
+
+**Status: 6/6 on Debug|x64 and 6/6 on Release|x64**, measured 2026-08-20 against
+`P2Pmsgcore.dll` 0.10.0.0 (83 flat C entry points) on JDK 23.0.2. Run them with
+`.\run_all.ps1`.
+
+---
+
+## Read this first: the bindings are generated, and generated things go stale
+
+From 2026-08-14 to 2026-08-20 the committed bindings covered **72 of the library's
+83** entry points. Nothing failed. `mvn compile` was green and the smoke test
+printed "passed" — while printing `Hub created: false` three lines above it.
+
+The eleven that were missing were not a random tail:
+
+```
+p2peerhub_require_auth        p2peerhub_auth_arm
+p2peerhub_is_auth_required    p2peerhub_auth_arm_text
+p2peerhub_set_identity        p2peerhub_auth_allow_list_path
+p2peerhub_set_allow_list      p2peerhub_set_sink
+p2peerhub_reload_allow_list   p2peerhub_set_sink_u8
+p2peerhub_provision_auth
+```
+
+Nine are the whole authentication block and two are the receive sink. Because
+authentication became **required by default** on 2026-08-18, and a hub that cannot
+enforce it does not start, a Java caller holding those bindings could not start a
+hub *at all* — and could not turn the requirement off either, because
+`require_auth` was one of the missing eleven.
+
+`AbiCoverage` now exists so that this fails loudly instead of quietly. It reads
+`abi-flat.manifest` out of the P2Pmsgcore checkout — the file VERSIONING.md §2
+names as *the* enumeration of the covered surface — and refuses to pass if any
+promised name has no generated binding. It is deliberately not a copy of that list
+kept here: a copy is precisely what drifted last time.
+
+---
+
+## Read this second: the JVM brings its own C++ runtime, and it is usually too old
+
+**Symptom:** the first call into the library dies with `EXCEPTION_ACCESS_VIOLATION
+(0xC0000005)` inside `msvcp140.dll`, on the JVM's own stack, with no diagnostic of
+any kind. `hs_err_pid*.log` blames `msvcp140.dll+0x12f58`.
+
+**Cause:** a JDK ships its own `msvcp140.dll` / `VCRUNTIME140.dll` in `bin\`, and
+`jvm.dll` imports them, so they are loaded before any of your code runs. Windows
+resolves a DLL's imports against whatever module of that base name is *already*
+loaded — so `P2Pmsgcore.dll` gets the JDK's copy, not the system's, and no `PATH`,
+`java.library.path` or load order can change that. P2Pmsgcore is built with MSVC
+14.4x and uses `std::mutex`, whose constructor became `constexpr` in toolset
+**14.40** (VS 2022 17.10); against an older runtime it dereferences null.
+
+**Measured** on 2026-08-20 — same DLL, same non-MFC host, the pre-loaded runtime
+the only variable:
+
+| runtime in the process | first call into the library |
+|---|---|
+| 14.36.32532 (Oracle JDK 22 / 23, OpenJDK 22 bundle) | **0xC0000005** |
+| 14.40.33810 (Temurin 21 bundle) | ok |
+| 14.44.35211 (system redist) | ok |
+
+**What to do:** run on a JDK 22+ whose `bin\msvcp140.dll` is **14.40 or newer**.
+`run_all.ps1` checks this before it runs anything and stops with an explanation
+rather than letting the JVM crash. If your JDK is older, the supported answers are
+to use a different JDK, or to build P2Pmsgcore with an older toolset — replacing
+files inside a JDK is neither.
 
 ---
 
@@ -15,75 +84,82 @@ Exposes the four core C++ classes to Java using the Panama Foreign Function Inte
 
 | Tool        | Version  | Notes                              |
 |-------------|----------|------------------------------------|
-| Java        | 22+      | `java --version`                   |
-| jextract    | 22+      | see below for install              |
-| MSVC        | 2019+    | or compatible; builds the DLL      |
-| A P2Pmsgcore checkout | existing | supplies the C wrapper sources **and** the header jextract reads |
+| Java        | **22+**  | `java.lang.foreign` left preview in 22. Verified on **23.0.2**. And see the runtime note above. |
+| jextract    | 22+      | Only needed to regenerate; the output is committed. Verified with **jextract 25**. |
+| Maven       | 3.9+     | `mvn compile` |
+| MSVC        | 2022     | builds the DLL |
+| A P2Pmsgcore checkout | existing | supplies the C wrapper sources, the header jextract reads, **and** the ABI manifest `AbiCoverage` checks against |
 
-Throughout this document `<P2Pmsgcore>` means the root of that checkout — the
-directory holding `P2Pmsgcore(2022).vcxproj` and `P2Pmsgcore_c.h`.
+Throughout, `<P2Pmsgcore>` means the root of that checkout — the directory holding
+`P2Pmsgcore(2022).vcxproj` and `P2Pmsgcore_c.h`.
+
+---
+
+## Quick start
+
+```powershell
+.\run_all.ps1                      # stage DLLs, mvn compile, run all six tests
+.\run_all.ps1 -Config Debug
+.\run_all.ps1 -Java "C:\path\to\jdk\bin\java.exe"
+.\run_all.ps1 -LibDir D:\build\P2Pmsgcore\Release
+```
+
+It stages `P2Pmsgcore.dll` **and** the `Msgcore.dll` from the same build into
+`bin\`, puts that directory on `PATH`, and reports each test by exit code
+(0 PASS, 1 FAIL, 2 SETUP, 3 INCONCLUSIVE).
+
+Both DLLs must come from the same build. A mismatched pair produces the least
+helpful error in this toolchain — `Cannot open library: P2Pmsgcore.dll`, naming
+the DLL that *was* found and saying nothing about the dependency that was not.
 
 ---
 
 ## Step 1 – Build the DLL
 
 **The C wrapper lives in P2Pmsgcore, not here.** `P2Pmsgcore_c.h`,
-`P2Pmsgcore_c.cpp` and `P2Pmsgcore_c_u8.cpp` are ordinary sources of that
-project, listed in both `P2Pmsgcore(2022).vcxproj` and its `CMakeLists.txt`, so
-they are compiled into `P2Pmsgcore.dll` and `libp2pmsgcore.so` by an ordinary
-build. There is nothing to copy and nothing to add to a project file.
+`P2Pmsgcore_c.cpp` and `P2Pmsgcore_c_u8.cpp` are ordinary sources of that project,
+listed in both `P2Pmsgcore(2022).vcxproj` and its `CMakeLists.txt`, so they are
+compiled into `P2Pmsgcore.dll` and `libp2pmsgcore.so` by an ordinary build.
 
 > This tree used to carry its own copy under `native\`, and Step 1 used to be
 > "copy these three files into P2Pmsgcore". That copy was **deleted on
 > 2026-08-14**: an ABI definition duplicated across two repositories drifts, and
 > this one already had — the copy here sat several fixes behind the library it
 > described, including the handle registry every entry point now depends on.
-> The header in `<P2Pmsgcore>` is the only copy, and it is the one that is
-> compiled, so it cannot silently disagree with the DLL you load.
 
-In the project's **Preprocessor Definitions** make sure
-`P2Pmsgcore_EXPORTS` is defined (it already is for the DLL build target; the
-static `DebugLib`/`ReleaseLib` configurations define `P2Pmsgcore_STATIC`
-instead, which expands `P2PC_API` to nothing — those cannot be loaded by
-Panama, which needs a shared library).
+In the project's **Preprocessor Definitions** make sure `P2Pmsgcore_EXPORTS` is
+defined (it already is for the DLL target; the static `DebugLib`/`ReleaseLib`
+configurations define `P2Pmsgcore_STATIC` instead, which expands `P2PC_API` to
+nothing — those cannot be loaded by Panama, which needs a shared library).
 
-Build the DLL:
 ```
-cd <P2Pmsgcore>
-msbuild P2Pmsgcore(2022).vcxproj /p:Configuration=Release /p:Platform=x64
+cmake --build build-win-cmake --config Release --target p2pmsgcore
 ```
-The output `P2Pmsgcore.dll` goes into the build output folder
-(`out\x64\Release\`).
 
-Confirm the C surface is actually exported before going further — a DLL that
-built fine still exports nothing if `P2Pmsgcore_EXPORTS` was missing:
-```bat
-dumpbin /exports out\x64\Release\P2Pmsgcore.dll | findstr p2paddr_create
+Confirm the surface really is exported — a DLL that built fine still exports
+nothing if `P2Pmsgcore_EXPORTS` was missing:
+
+```
+python <P2Pmsgcore>\.github\ci\check_abi_exports.py ^
+       --library build-win-cmake\P2Pmsgcore\Release\p2pmsgcore.dll ^
+       --manifest <P2Pmsgcore>\.github\ci\abi-flat.manifest ^
+       --dumpbin  "<VS>\VC\Tools\MSVC\<ver>\bin\Hostx64\x64\dumpbin.exe"
 ```
 
 ---
 
-## Step 2 – Install jextract (if not already installed)
+## Step 2 – Install jextract
 
-Download the prebuilt binary for Java 22 from
-https://jdk.java.net/jextract/ and add it to `PATH`.
-
-Verify: `jextract --version`
+Prebuilt binaries: https://jdk.java.net/jextract/. Verify with
+`jextract --version`. Only needed if you are regenerating.
 
 ---
 
-## Step 3 – Run jextract
+## Step 3 – Regenerate the bindings
 
-Modern jextract (22+) names the header class `<header>_h` and, run bare, also
-emits every declaration reachable through `<stdint.h>`/`<wchar.h>` (~40 noise
-files: `FILE`, `stat`, `tm`, setjmp buffers, …). To get a single clean class
-named `P2Pmsgcore_c` (matching the wrappers), **filter the includes to this
-header and set the class name**.
-
-Run this from `<P2Pmsgcore>`, the directory holding the header — jextract reads
-it straight out of the library's own source tree, which is what keeps the
-bindings and the DLL from disagreeing. `<bindings>` is this repository's
-`P2Pmsgcore\` directory.
+Run bare, jextract also emits every declaration reachable through
+`<stdint.h>`/`<wchar.h>` (~40 noise files: `FILE`, `stat`, `tm`, setjmp buffers).
+Filter the includes to this header and set the class name:
 
 ```bat
 cd <P2Pmsgcore>
@@ -102,69 +178,228 @@ jextract ^
   P2Pmsgcore_c.h
 ```
 
-`jx_dump.txt` and `jx_filter.args` are scratch output written into the
-P2Pmsgcore checkout; delete them afterwards rather than committing them.
+The filter should come out at **89 lines: 83 `--include-function` and 6
+`--include-typedef`.** If the function count is not 83, the header and this
+document have diverged — check the manifest.
 
-This **replaces** `...\native_\P2Pmsgcore_c.java` (+ a `P2Pmsgcore_c$shared.java`
-split class) with the authoritative generated version — all **74** entry points
-incl. the **21** `_u8` twins (measured against the built DLL on 2026-08-14; the
-figures 70/20 quoted here previously were stale).
+That writes four files into `...\native_\`:
 
-> **Note (no-arg functions):** the header declares `p2paddr_create(void)` /
+| file | what it is |
+|---|---|
+| `P2Pmsgcore_c.java` | one `MethodHandle` + typed static method per C function |
+| `P2Pmsgcore_c$shared.java` | the layout constants split out |
+| `P2PeerHubSinkFnU8.java` | upcall-stub factory for the UTF-8 receive-sink typedef |
+| `P2PeerHubSinkFn.java` | the same for the `wchar_t` sink |
+
+Then run `AbiCoverage` — it is the check that the regeneration was complete.
+
+> **No-arg functions:** the header declares `p2paddr_create(void)` /
 > `p2peermsg_create(void)` with an explicit `void`. Empty `()` in C means an
-> *unprototyped* function, which jextract emits as a variadic invoker class
-> rather than a plain no-arg method — keep the `void`.
+> *unprototyped* function, which jextract emits as a variadic invoker class rather
+> than a plain no-arg method — keep the `void`.
 
-> **JDK-version note:** jextract 25's output calls `SymbolLookup.findOrThrow`,
-> added in **JDK 24**. To build on **JDK 22/23**, rewrite it to the equivalent
-> `find(...).orElseThrow()` after generating:
-> ```bat
-> powershell -Command "(Get-Content ..\java\src\main\java\com\p2pmsgcore\native_\P2Pmsgcore_c.java) -replace 'SYMBOL_LOOKUP\.findOrThrow\((\"[^\"]+\")\)', 'SYMBOL_LOOKUP.find($1).orElseThrow()' | Set-Content ..\java\src\main\java\com\p2pmsgcore\native_\P2Pmsgcore_c.java"
+> **JDK 22/23 shim:** jextract 25's output calls `SymbolLookup.findOrThrow`, added
+> in **JDK 24**. To build on 22/23, rewrite it after generating:
+> ```powershell
+> Get-ChildItem ..\java\src\main\java\com\p2pmsgcore\native_\*.java | ForEach-Object {
+>   (Get-Content $_) -replace 'SYMBOL_LOOKUP\.findOrThrow\((\"[^\"]+\")\)',
+>                             'SYMBOL_LOOKUP.find($1).orElseThrow()' | Set-Content $_
+> }
 > ```
-> (do the same for `P2Pmsgcore_c$shared.java`) — or bump the pom to `release 24`+
-> and build with a matching JDK. Verified: filtered regen + this shim compiles on
-> JDK 22 and `SmokeTestU8` passes against the DLL.
+> — or bump the pom to `release 24`+ and build with a matching JDK.
 
 ---
 
-## Step 4 – Build the Java project
+## Step 4 – Build and run
 
-```bat
+```
 cd java
 mvn compile
 ```
 
+```
+java --enable-native-access=ALL-UNNAMED -cp target\classes com.p2pmsgcore.SmokeTest
+```
+
+with the directory holding both DLLs **on `PATH`**.
+
+> **`-Djava.library.path` is no longer enough**, and this changed under us.
+> jextract 25 emits `SymbolLookup.libraryLookup(System.mapLibraryName("P2Pmsgcore"), …)`,
+> which goes through the OS loader search — executable directory, System32, `PATH` —
+> and does not consult `java.library.path` at all. A wrong path now produces
+> `IllegalArgumentException: Cannot open library: P2Pmsgcore.dll` from a static
+> initialiser. `run_all.ps1` sets `PATH` for you.
+
 ---
 
-## Step 5 – Run the smoke test
+## Lifecycle — call startup before any hub
 
-```bat
-java --enable-native-access=ALL-UNNAMED ^
-     -Djava.library.path=<P2Pmsgcore>\out\x64\Release ^
-     -cp target\classes ^
-     com.p2pmsgcore.SmokeTest
+```java
+P2Pmsgcore.startup(16);          // 16 = max hubs; throws if it fails
+try {
+    // ... create/spawn hubs, connections, post messages ...
+} finally {
+    P2Pmsgcore.cleanup();
+}
 ```
 
-`java.library.path` points at the P2Pmsgcore build output — the directory the
-DLL from Step 1 was written to. `Msgcore.dll` must be resolvable from there too,
-since `P2Pmsgcore.dll` imports it.
+`startup` initialises the shared hub/pump locks and the hub-manager table (the
+native `StartupP2Pmsg`). **Skipping it used to crash hard** in native code on the
+first `createHub`; it now fails cleanly, and `SmokeTestGuard` is the test that says
+so. `P2PAddr` and `P2PMsg` are pure object model and do not need it.
 
-Expected output:
+**Once per process.** `cleanup()` is terminal — a second `startup()` after it does
+not restore a working environment.
+
+### Two threading rules the C header does not state
+
+Both were measured here on 2026-08-20, and both are invisible from Java because
+`p2peerhub_create_hub` catches the `P2Pevent` that explains them — deliberately,
+since a C++ exception must not unwind across an `extern "C"` boundary — and returns
+a bare `0`.
+
+1. **One hub per thread.** `CreateP2PmsgHub` refuses to associate a second pump
+   with a thread that already has one ("Single P2PmsgPump per thread context"), and
+   closing and destroying the first hub does *not* release its thread. Three hubs
+   created from the main thread give `true, false, false`; the same three created
+   one per thread all succeed.
+
+2. **`createHub()` OR `spawnHub()`, never both.** `SpawnHub` opens with
+   `ASSERT(m_nHubID == 0)`, so the pair trips a Debug assertion — a modal dialog
+   that stops the process — while Release tolerates it silently. This tree's own
+   smoke test made exactly that call pair from the day it was written, and had only
+   ever been run against Release. `spawnHub()` alone is the normal path: it gives
+   the hub a thread of its own, which is also what rule 1 wants.
+
+---
+
+## Authentication
+
+Auth is **required by default** since 2026-08-18 and a hub that cannot enforce it
+does not start — `createHub()` and `spawnHub()` both refuse before a pump thread
+exists, because the alternative is a hub that starts, refuses every peer, and looks
+healthy from outside.
+
+```java
+try (P2PeerHub hub = new P2PeerHub("Mesh.Node")) {
+
+    var prov = hub.provisionAuth("node.key");     // creates the key + node.key.pub
+    System.out.println(prov.fingerprint());       // read this aloud to the operator
+
+    hub.setAllowList("allow.txt");                // who this hub will accept
+
+    ArmResult arm = hub.authArm();                // would it start? and why not?
+    if (!arm.arms()) throw new IllegalStateException(arm.text());
+
+    hub.spawnHub();
+}
 ```
-P2PAddr name   : TestHub.Node1
-P2PAddr isNull : false
-P2PAddr isEmpty: false
-P2PMsg name  : Test.Greeting
-P2PMsg src   : Hub1
-P2PMsg dst   : Hub2
-P2PMsg size  : 9
-P2PMsg data  : Hello P2P
-Hub created: true
-Hub address: SmokeHub
-Hub id     : <number>
-Con mode (before post): 2
-Smoke test passed.
+
+`provisionAuth` does **not** create the allow-list, and the hub will not arm until
+one exists with at least one peer in it. Who to trust is not a thing a library can
+supply, and one that wrote an empty allow-list would be answering that question
+with "nobody" — which refuses every peer.
+
+The migration for a trusted segment or an in-process router is one deliberate call:
+
+```java
+hub.requireAuth(false);       // ArmResult.NOT_REQUIRED - starts, and accepts anyone
 ```
+
+`ArmResult.text()` is read back through `p2peerhub_auth_arm_text`, so a Java
+diagnostic and the C++ one for the same state cannot disagree. `IdResult` has no
+such entry point on the ABI, so those fourteen names are transcribed from
+`P2PIdentityStore.h` and nothing checks that they still line up — see the class
+javadoc.
+
+---
+
+## The receive sink
+
+Everything else on this ABI is post-only. `setSink` is how an FFI consumer learns
+that a message was **delivered** to its hub.
+
+```java
+hub.setSink((src, dst, msgID, data) -> {
+    queue.add(new Frame(src, msgID, data));   // copy and return; do not block
+    return true;                              // consumed
+});
+hub.spawnHub();
+```
+
+* It runs on the **hub's pump thread** — a thread the JVM never created, attached
+  transparently by Panama on the way into the upcall.
+* `dst` is the hub's **full** address, read from the hub rather than off the message
+  (`hub.address()` returns the leaf).
+* `data` is copied out before the handler sees it; the native bytes are valid only
+  for the duration of the call.
+* Returning `false` hands the message back to the framework, which for a peer with
+  no compiled message map means an undeliverable bounce per message — and that
+  flood is what wedges `closeHub()`.
+* A handler that throws is caught and reported, and the message counts as consumed.
+  An exception escaping an upcall stub does not unwind into C++; it takes the whole
+  JVM down.
+* The arena holding the stub is `Arena.ofShared()`, not `ofConfined()`: a confined
+  arena throws `WrongThreadException` when touched from the pump thread, and that
+  throw happens *inside* the upcall, where it is fatal rather than catchable.
+
+Register before `spawnHub()` and clear after `closeHub()`. Swapping one live sink
+for another is not safe against a running pump, so `setSink` refuses to replace one.
+
+---
+
+## String encoding
+
+The library is built with `UNICODE`, so `TCHAR` is `wchar_t` — UTF-16LE on Windows,
+UTF-32 on Linux. Each string-bearing C function therefore has a `*_u8` twin that
+takes and returns **UTF-8 `char*`**, converting at the boundary, and those are
+ABI-identical on both platforms.
+
+| `wchar_t` method | UTF-8 (portable) method |
+|---|---|
+| `new P2PAddr(s)` | `P2PAddr.ofUtf8(s)` |
+| `addr.name()` / `isChild` / `isRable` | `nameUtf8()` / `isChildUtf8` / `isRableUtf8` |
+| `new P2PMsg(...)` | `P2PMsg.ofUtf8(...)` / `ofMsgIdUtf8(id)` |
+| `msg.source/destination/name` | `sourceUtf8/destinationUtf8/nameUtf8` |
+| `msg.responseFactory/redirectFactory` | `responseFactoryUtf8/redirectFactoryUtf8` |
+| `P2PeerConWsa.clientFactory/serviceFactory` | `clientFactoryUtf8/serviceFactoryUtf8` |
+| `con.address()` | `con.addressUtf8()` |
+| `new P2PeerHub(a)` / `createHub` / `connectionExists` / `address` | `P2PeerHub.ofUtf8(a)` / `createHubUtf8` / `connectionExistsUtf8` / `addressUtf8` |
+
+Prefer the `_u8` methods for encoding-portable behaviour. `SmokeTestU8` exercises
+them with multibyte UTF-8 (é / € / astral 🚀) and mirrors the native `p2p_u8_smoke`
+CTest.
+
+Paths — identity, allow-list — are UTF-8 on both platforms and have no wide twin.
+
+**Sizes are `uint32_t`, and used not to be.** They were `unsigned short` until
+2026-08-14, which put a silent 64 KB wrap in front of every FFI caller. The
+wrappers here clamped payloads to `Short.MAX_VALUE`, reintroducing that truncation
+one layer up in Java where the C side could no longer see it; they now pass the
+length the caller passed. The cap is still `MAX_P2Psize` (32768) and an over-cap
+message is refused downstream — which surfaces as a null handle, not a short
+payload.
+
+**`isChild` takes the candidate child.** `addr.isChild(x)` asks whether *x* is a
+child of *addr*, not the other way round. This javadoc had it backwards until
+2026-08-20; an inverted hierarchy predicate reads as a permission bug much later.
+
+---
+
+## Tests
+
+| Test | What it proves | Exit codes |
+|---|---|---|
+| `AbiCoverage` | every entry point in `abi-flat.manifest` has a generated binding | 0/1/2 |
+| `SmokeTest` | every wrapper class end to end, with assertions | 0/1 |
+| `SmokeTestU8` | the `_u8` surface round-trips multibyte UTF-8 | 0/1 |
+| `SmokeTestGuard` | `createHub` without `startup` fails cleanly instead of crashing in ntdll | 0/1 |
+| `SmokeTestAuth` | the arm gate: unprovisioned refuses, `requireAuth(false)` runs, provisioning from Java arms it, and `spawnHub` is gated too | 0/1 |
+| `SmokeTestSink` | a delivered message reaches Java, on the pump thread, with its four fields intact, and a throwing handler does not kill the JVM | 0/1/3 |
+
+`SmokeTest` used to print "Smoke test passed." unconditionally. On 2026-08-20 it
+was doing that while printing `Hub created: false` — the hub had stopped starting
+two days earlier and nothing was checking. Every line of it is now an assertion.
 
 ---
 
@@ -174,84 +409,37 @@ The C wrapper is **not** in this repository — it is part of P2Pmsgcore:
 
 ```
 <P2Pmsgcore>\
-├── P2Pmsgcore_c.h              ← extern "C" wrapper header (jextract reads this)
-├── P2Pmsgcore_c.cpp            ← extern "C" wrapper implementation
-└── P2Pmsgcore_c_u8.cpp         ← UTF-8 (_u8) entry points
+├── P2Pmsgcore_c.h               <- extern "C" wrapper header (jextract reads this)
+├── P2Pmsgcore_c.cpp
+├── P2Pmsgcore_c_u8.cpp          <- the _u8 entry points
+└── .github\ci\abi-flat.manifest <- what AbiCoverage checks against
 ```
 
 ```
 MSCS_JavaBindings\P2Pmsgcore\
+├── run_all.ps1                  stage + build + run + summarise
+├── bin\                         staged DLLs (generated; not committed)
+├── logs\                        per-test output (generated; not committed)
 └── java\
     ├── pom.xml
     └── src\main\java\com\p2pmsgcore\
-        ├── native_\
-        │   └── P2Pmsgcore_c.java   ← jextract stub (replace with jextract output)
-        ├── NativeStrings.java       ← wchar_t ↔ String helper
-        ├── P2PAddr.java             ← clean wrapper for P2Paddr
-        ├── P2PMsg.java              ← clean wrapper for P2PeerMsg
-        ├── P2PeerConWsa.java        ← clean wrapper for P2PeerConWsa
-        ├── P2PeerHub.java           ← clean wrapper for P2PeerHub
-        └── SmokeTest.java           ← end-to-end smoke test
+        ├── native_\             GENERATED by jextract - do not hand-edit
+        ├── NativeStrings.java   wchar_t / UTF-8 <-> String
+        ├── P2Pmsgcore.java      startup / cleanup
+        ├── P2PAddr.java  P2PMsg.java  P2PeerConWsa.java  P2PeerHub.java
+        ├── ArmResult.java  IdResult.java
+        └── SmokeTest*.java  AbiCoverage.java
 ```
-
----
-
-## Lifecycle — call startup before any hub
-
-The P2Pmsg environment must be initialised **once per process before any
-`P2PeerHub` operation** and torn down at the end:
-
-```java
-import com.p2pmsgcore.native_.P2Pmsgcore_c;
-
-P2Pmsgcore_c.p2pmsgcore_startup(16);   // 16 = max hubs; returns 0 on failure
-try {
-    // ... create/spawn hubs, connections, post messages ...
-} finally {
-    P2Pmsgcore_c.p2pmsgcore_cleanup();
-}
-```
-
-`p2pmsgcore_startup` initialises the shared hub/pump locks and the hub-manager
-table (the native `StartupP2Pmsg`). **Skipping it crashes hard** in native code
-on the first `createHub` — it enters uninitialised critical sections. `P2PAddr`
-and `P2PMsg` (pure object model) do **not** require startup, so code that only
-builds addresses/messages can skip it. `SmokeTest` shows the full pattern.
 
 ## Ownership rules
 
-- `P2PeerHub.postConnection(con, pump)` — hub takes ownership of `con`;
-  the Java wrapper calls `con.detach()` automatically.
-- `P2PeerHub.postMessage(msg)` / `P2PeerConWsa.postMessage(msg)` — framework
-  takes ownership of `msg`; the wrapper calls `msg.detach()` automatically.
-- All other objects follow RAII: use try-with-resources.
+- `P2PeerHub.postConnection(con, pump)` — the hub takes ownership of `con`; the
+  wrapper calls `con.detach()` for you.
+- `P2PeerHub.postMessage(msg)` / `P2PeerConWsa.postMessage(msg)` — the framework
+  takes ownership of `msg`; the wrapper calls `msg.detach()` for you.
+- Everything else is RAII: use try-with-resources.
 
----
+## License
 
-## String encoding
-
-The C++ library is built with `UNICODE` defined, so all `TCHAR` strings are
-`wchar_t` (UTF-16LE on Windows).  `NativeStrings.toWStr` / `fromWStr` handle
-the conversion transparently.
-
-### UTF-8 (`_u8`) — the portable surface
-
-`wchar_t` is 2 bytes on Windows (UTF-16) but 4 bytes on Linux (UTF-32), so the
-`wchar_t` entry points are **not** portable across a Windows DLL and the Linux
-`libp2pmsgcore.so`. Each string-bearing C function therefore has a `*_u8` twin
-(in `<P2Pmsgcore>\P2Pmsgcore_c_u8.cpp`) that takes/returns **UTF-8 `char*`**, converting
-at the boundary. jextract regenerates the `_u8` bindings automatically from the
-header, and the Java wrappers expose them:
-
-| wchar_t method            | UTF-8 (portable) method        |
-|---------------------------|--------------------------------|
-| `new P2PAddr(s)`          | `P2PAddr.ofUtf8(s)`            |
-| `addr.name()`             | `addr.nameUtf8()`             |
-| `addr.isChild/isRable`    | `addr.isChildUtf8/isRableUtf8`|
-| `new P2PMsg(...)`         | `P2PMsg.ofUtf8(...)` / `ofMsgIdUtf8(id)` |
-| `msg.source/destination/name` | `msg.sourceUtf8/destinationUtf8/nameUtf8` |
-| `msg.setSource/setDestination` | `msg.setSourceUtf8/setDestinationUtf8` |
-
-Prefer the `_u8` methods for encoding-portable behaviour. `SmokeTestU8`
-exercises them with multibyte UTF-8 (é / € / astral 🚀) and mirrors the native
-`p2p_u8_smoke` CTest.
+Copyright 2026 Khrustal & Mann, MELBOURNE, VICTORIA, AUSTRALIA, 3000.
+Licensed under the Apache License, Version 2.0.

@@ -1,0 +1,45 @@
+package com.p2pmsgcore;
+
+import com.p2pmsgcore.native_.P2Pmsgcore_c;
+
+/**
+ * Process-wide lifecycle for the P2Pmsg environment.
+ *
+ * <p>{@link #startup} must be called <b>once per process, before any
+ * {@link P2PeerHub} operation</b>, and {@link #cleanup} at the end. Skipping it
+ * does not fail politely in the kernel — {@code CreateP2PmsgHub} enters
+ * uninitialised critical sections — which is why the C entry point guards it and
+ * why {@code SmokeTestGuard} exists to prove the guard holds.
+ *
+ * <p>{@link P2PAddr} and {@link P2PMsg} are pure object model and do not need it;
+ * code that only builds addresses and messages can skip startup entirely.
+ *
+ * <pre>{@code
+ * P2Pmsgcore.startup(16);
+ * try {
+ *     // ... hubs, connections, messages ...
+ * } finally {
+ *     P2Pmsgcore.cleanup();
+ * }
+ * }</pre>
+ */
+public final class P2Pmsgcore {
+
+    private P2Pmsgcore() {}
+
+    /**
+     * Initialises the shared hub/pump locks and the hub-manager table.
+     *
+     * @param maxHubs the size of the hub table
+     * @throws IllegalStateException if the environment could not be initialised
+     */
+    public static void startup(int maxHubs) {
+        if (P2Pmsgcore_c.p2pmsgcore_startup(maxHubs) == 0)
+            throw new IllegalStateException("p2pmsgcore_startup(" + maxHubs + ") failed");
+    }
+
+    /** Tears the environment back down. Safe to call once, at the end. */
+    public static void cleanup() {
+        P2Pmsgcore_c.p2pmsgcore_cleanup();
+    }
+}

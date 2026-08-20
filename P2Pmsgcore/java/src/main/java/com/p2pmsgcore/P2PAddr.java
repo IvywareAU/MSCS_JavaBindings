@@ -64,17 +64,26 @@ public final class P2PAddr implements AutoCloseable {
     /** Returns the serialised byte size of this address. */
     public int byteSize() {
         checkOpen();
-        return Short.toUnsignedInt(P2Pmsgcore_c.p2paddr_sizeof(handle));
+        //  uint32_t since 2026-08-14 (was unsigned short); a serialised address
+        //  is far below 2 GB, so the int is returned as it stands.
+        return P2Pmsgcore_c.p2paddr_sizeof(handle);
     }
 
     /**
-     * Returns {@code true} if this address is a child of {@code other}
-     * in the hub hierarchy.
+     * Returns {@code true} if {@code candidateChild} is a child of <b>this</b>
+     * address — not the other way round.
+     *
+     * <p>The direction is worth stating because this javadoc had it backwards
+     * until 2026-08-20 and nothing caught it: {@code P2Paddr::IsChild} takes the
+     * candidate child as its argument, so {@code new P2PAddr("TestHub")
+     * .isChild("TestHub.Node1")} is {@code true} and the reverse is {@code false}.
+     * An inverted hierarchy predicate is the kind of mistake that reads as a
+     * permission bug much later.
      */
-    public boolean isChild(String other) {
+    public boolean isChild(String candidateChild) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            return P2Pmsgcore_c.p2paddr_is_child(handle, NativeStrings.toWStr(other, tmp)) != 0;
+            return P2Pmsgcore_c.p2paddr_is_child(handle, NativeStrings.toWStr(candidateChild, tmp)) != 0;
         }
     }
 
@@ -107,11 +116,11 @@ public final class P2PAddr implements AutoCloseable {
         return NativeStrings.fromU8(P2Pmsgcore_c.p2paddr_c_name_u8(handle));
     }
 
-    /** UTF-8 variant of {@link #isChild(String)}. */
-    public boolean isChildUtf8(String other) {
+    /** UTF-8 variant of {@link #isChild(String)} - same direction. */
+    public boolean isChildUtf8(String candidateChild) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            return P2Pmsgcore_c.p2paddr_is_child_u8(handle, NativeStrings.toU8(other, tmp)) != 0;
+            return P2Pmsgcore_c.p2paddr_is_child_u8(handle, NativeStrings.toU8(candidateChild, tmp)) != 0;
         }
     }
 

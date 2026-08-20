@@ -16,3 +16,7 @@ jx_filter.args
 .idea/
 .understand-anything/
 *.iml
+
+# Staged native DLLs and per-test output (run_all.ps1 writes both)
+bin/
+logs/

@@ -179,4 +179,32 @@ public final class P2PeerConWsa implements AutoCloseable {
     private void checkOpen() {
         if (closed) throw new IllegalStateException("P2PeerConWsa already closed or detached");
     }
+
+    // -- UTF-8 (portable) surface ----------------------------------------------
+    //  ABI-identical on Windows and Linux; prefer these over the wchar_t twins in
+    //  any code that has to run on both.
+
+    /** {@link #clientFactory} over the UTF-8 {@code _u8} C API. */
+    public static P2PeerConWsa clientFactoryUtf8(String thatAddr, String ipAddress, int port) {
+        try (Arena tmp = Arena.ofConfined()) {
+            return new P2PeerConWsa(P2Pmsgcore_c.p2peerconwsa_client_factory_u8(
+                    NativeStrings.toU8(thatAddr,  tmp),
+                    NativeStrings.toU8(ipAddress, tmp),
+                    (short) port));
+        }
+    }
+
+    /** {@link #serviceFactory} over the UTF-8 {@code _u8} C API. */
+    public static P2PeerConWsa serviceFactoryUtf8(String thatAddr, int port) {
+        try (Arena tmp = Arena.ofConfined()) {
+            return new P2PeerConWsa(P2Pmsgcore_c.p2peerconwsa_service_factory_u8(
+                    NativeStrings.toU8(thatAddr, tmp), (short) port));
+        }
+    }
+
+    /** This connection's peer address, decoded from UTF-8. */
+    public String addressUtf8() {
+        checkOpen();
+        return NativeStrings.fromU8(P2Pmsgcore_c.p2peerconwsa_get_address_u8(handle));
+    }
 }

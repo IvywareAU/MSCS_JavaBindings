@@ -37,7 +37,12 @@
         </configuration>
       </plugin>
 
-      <!-- Pass enable-native-access for tests -->
+      <!-- Pass enable-native-access for tests.
+         NOTE java.library.path below no longer locates the DLL: jextract 25's
+         output uses SymbolLookup.libraryLookup, which goes through the OS loader
+         search (exe dir, System32, PATH) and never consults it. run_all.ps1 sets
+         PATH instead. The property is kept because it costs nothing and a future
+         hand-written loader would want it. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

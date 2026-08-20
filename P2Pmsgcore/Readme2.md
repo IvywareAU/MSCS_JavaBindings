@@ -9,7 +9,7 @@ described. See `README.md` Step 1.
 
 | File (in the P2Pmsgcore checkout) | Purpose |
 |------|---------|
-| `P2Pmsgcore_c.h` | `extern "C"` header with opaque handles and flat C functions for all four classes — 74 entry points, 21 of them `_u8` twins. **jextract reads this file** |
+| `P2Pmsgcore_c.h` | `extern "C"` header with opaque handles and flat C functions for all four classes — **83** entry points, 21 of them `_u8` twins (74/21 until the authentication block and the receive sink landed; regenerated 2026-08-20). **jextract reads this file** |
 | `P2Pmsgcore_c.cpp` | Implementation — resolves handles through a registry of live handles rather than casting the caller's pointer, and catches `P2Pevent` at every entry point so nothing unwinds across the `extern "C"` boundary |
 | `P2Pmsgcore_c_u8.cpp` | The UTF-8 `_u8` twins |
 
@@ -18,13 +18,18 @@ described. See `README.md` Step 1.
 ### Java layer (Panama bindings — Step 5 & 6)
 | File | Purpose |
 |------|---------|
-| `native_/P2Pmsgcore_c.java` | Low-level jextract stub — one `MethodHandle` + typed static method per C function |
-| `NativeStrings.java` | `wchar_t*` ↔ `String` (UTF-16LE) conversion |
+| `native_/P2Pmsgcore_c.java` | Low-level jextract output — one `MethodHandle` + typed static method per C function, all 83 |
+| `native_/P2PeerHubSinkFn[U8].java` | jextract upcall-stub factories for the receive-sink typedefs |
+| `NativeStrings.java` | `wchar_t*` and UTF-8 `char*` ↔ `String` conversion |
+| `P2Pmsgcore.java` | Process lifecycle: `startup` / `cleanup` |
 | `P2PAddr.java` | Clean `AutoCloseable` wrapper for `P2Paddr` |
 | `P2PMsg.java` | Clean wrapper for `P2PeerMsg` with `detach()` for framework ownership handoff |
 | `P2PeerConWsa.java` | TCP connection wrapper with `clientFactory`/`serviceFactory` static constructors |
-| `P2PeerHub.java` | Hub wrapper with spawn/close/postConnection/postMessage |
-| `SmokeTest.java` | End-to-end test exercising all four wrappers |
+| `P2PeerHub.java` | Hub wrapper: spawn/close/post, **the authentication block**, and **the receive sink** as a Panama upcall |
+| `ArmResult.java` / `IdResult.java` | The two enums the ABI returns as `int` |
+| `AbiCoverage.java` | Fails if any entry point in `abi-flat.manifest` has no generated binding |
+| `SmokeTest*.java` | Five smoke tests — object model, `_u8`, the startup guard, the arm gate, the sink |
+| `run_all.ps1` | Stage the DLLs, build, run all six, summarise by exit code |
 | `pom.xml` | Maven build — Java 22+, `--enable-native-access=ALL-UNNAMED` wired in |
 
 ### To activate

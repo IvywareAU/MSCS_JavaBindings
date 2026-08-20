@@ -52,7 +52,13 @@ public final class P2PMsg implements AutoCloseable {
             MemorySegment dataSeg = data != null && data.length > 0
                     ? tmp.allocateFrom(ValueLayout.JAVA_BYTE, data)
                     : MemorySegment.NULL;
-            short size = data != null ? (short) Math.min(data.length, Short.MAX_VALUE) : 0;
+            //  uint32_t since 2026-08-14. This used to clamp to Short.MAX_VALUE,
+            //  which is the very truncation the widening removed from the ABI --
+            //  reintroduced one layer up, in Java, where the C side could no longer
+            //  see it. Pass the length the caller actually passed: the cap is still
+            //  MAX_P2Psize (32768) and an over-cap message is REFUSED downstream,
+            //  which surfaces here as a null handle rather than a short payload.
+            int size = data != null ? data.length : 0;
             this.handle = P2Pmsgcore_c.p2peermsg_create_full(
                     NativeStrings.toWStr(src,   tmp),
                     NativeStrings.toWStr(dst,   tmp),
@@ -171,7 +177,13 @@ public final class P2PMsg implements AutoCloseable {
             MemorySegment dataSeg = data != null && data.length > 0
                     ? tmp.allocateFrom(ValueLayout.JAVA_BYTE, data)
                     : MemorySegment.NULL;
-            short size = data != null ? (short) Math.min(data.length, Short.MAX_VALUE) : 0;
+            //  uint32_t since 2026-08-14. This used to clamp to Short.MAX_VALUE,
+            //  which is the very truncation the widening removed from the ABI --
+            //  reintroduced one layer up, in Java, where the C side could no longer
+            //  see it. Pass the length the caller actually passed: the cap is still
+            //  MAX_P2Psize (32768) and an over-cap message is REFUSED downstream,
+            //  which surfaces here as a null handle rather than a short payload.
+            int size = data != null ? data.length : 0;
             MemorySegment h = P2Pmsgcore_c.p2peermsg_response_factory(
                     handle, NativeStrings.toWStr(msgID, tmp), dataSeg, size);
             return new P2PMsg(h);
@@ -210,12 +222,47 @@ public final class P2PMsg implements AutoCloseable {
             MemorySegment dataSeg = data != null && data.length > 0
                     ? tmp.allocateFrom(ValueLayout.JAVA_BYTE, data)
                     : MemorySegment.NULL;
-            short size = data != null ? (short) Math.min(data.length, Short.MAX_VALUE) : 0;
+            //  uint32_t since 2026-08-14. This used to clamp to Short.MAX_VALUE,
+            //  which is the very truncation the widening removed from the ABI --
+            //  reintroduced one layer up, in Java, where the C side could no longer
+            //  see it. Pass the length the caller actually passed: the cap is still
+            //  MAX_P2Psize (32768) and an over-cap message is REFUSED downstream,
+            //  which surfaces here as a null handle rather than a short payload.
+            int size = data != null ? data.length : 0;
             return new P2PMsg(P2Pmsgcore_c.p2peermsg_create_full_u8(
                     NativeStrings.toU8(src,   tmp),
                     NativeStrings.toU8(dst,   tmp),
                     NativeStrings.toU8(msgID, tmp),
                     dataSeg, size));
+        }
+    }
+
+    /** The serialised byte size of this message. */
+    public int byteSize() {
+        checkOpen();
+        //  uint32_t since 2026-08-14 (was unsigned short).
+        return P2Pmsgcore_c.p2peermsg_sizeof(handle);
+    }
+
+    /** {@link #responseFactory} over the UTF-8 {@code _u8} C API. */
+    public P2PMsg responseFactoryUtf8(String msgID, byte[] data) {
+        checkOpen();
+        try (Arena tmp = Arena.ofConfined()) {
+            MemorySegment dataSeg = data != null && data.length > 0
+                    ? tmp.allocateFrom(ValueLayout.JAVA_BYTE, data)
+                    : MemorySegment.NULL;
+            int size = data != null ? data.length : 0;
+            return new P2PMsg(P2Pmsgcore_c.p2peermsg_response_factory_u8(
+                    handle, NativeStrings.toU8(msgID, tmp), dataSeg, size));
+        }
+    }
+
+    /** {@link #redirectFactory} over the UTF-8 {@code _u8} C API. */
+    public P2PMsg redirectFactoryUtf8(String dstAddr) {
+        checkOpen();
+        try (Arena tmp = Arena.ofConfined()) {
+            return new P2PMsg(P2Pmsgcore_c.p2peermsg_redirect_factory_u8(
+                    handle, NativeStrings.toU8(dstAddr, tmp)));
         }
     }
 

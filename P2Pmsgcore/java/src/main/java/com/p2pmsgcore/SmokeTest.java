@@ -1,60 +1,95 @@
 package com.p2pmsgcore;
 
-import com.p2pmsgcore.native_.P2Pmsgcore_c;
+import java.nio.charset.StandardCharsets;
 
 /**
- * Minimal smoke test — run after the native DLL is on java.library.path.
+ * The end-to-end smoke test: every wrapper class, one process.
  *
- * Launch with:
- *   java --enable-native-access=ALL-UNNAMED
- *        -Djava.library.path=path\to\P2Pmsgcore.dll
- *        -cp target\classes
- *        com.p2pmsgcore.SmokeTest
+ * <p>This used to print "Smoke test passed." unconditionally, and on 2026-08-20 it
+ * was doing exactly that while printing {@code Hub created: false} three lines
+ * above — the hub had stopped starting when authentication became required by
+ * default on 2026-08-18, and nothing here was checking. A test whose verdict does
+ * not depend on the result is not a test, so every line below is now an assertion
+ * and the exit code is the verdict.
+ *
+ * <p>Run:
+ * <pre>
+ *   java --enable-native-access=ALL-UNNAMED -cp target\classes com.p2pmsgcore.SmokeTest
+ * </pre>
+ * with the directory holding {@code P2Pmsgcore.dll} and {@code Msgcore.dll} on
+ * {@code PATH} — see the README on why {@code -Djava.library.path} is not enough
+ * any more.
+ *
+ * <p>Verdict = exit code: 0 PASS, 1 FAIL.
  */
 public class SmokeTest {
 
+    private static int fails = 0;
+
+    private static void check(boolean ok, String msg) {
+        System.out.println((ok ? "ok  : " : "FAIL: ") + msg);
+        if (!ok) fails++;
+    }
+
     public static void main(String[] args) {
 
-        // ── Lifecycle: initialise the P2Pmsg environment ONCE before any hub op ─
-        // (StartupP2Pmsg sets up the shared hub/pump critical sections + hub table;
-        // without it, hub creation dereferences uninitialised locks and crashes.)
-        if (P2Pmsgcore_c.p2pmsgcore_startup(16) == 0)
-            throw new IllegalStateException("p2pmsgcore_startup failed");
-
-        // ── P2PAddr ───────────────────────────────────────────────────────────
+        // -- P2PAddr and P2PMsg are pure object model: no startup needed --------
         try (P2PAddr addr = new P2PAddr("TestHub.Node1")) {
-            System.out.println("P2PAddr name   : " + addr.name());
-            System.out.println("P2PAddr isNull : " + addr.isNull());
-            System.out.println("P2PAddr isEmpty: " + addr.isEmpty());
+            check("Node1".equals(addr.name()), "P2PAddr.name() is the LEAF: " + addr.name());
+            check(!addr.isNull(),              "P2PAddr.isNull() false");
+            check(!addr.isEmpty(),             "P2PAddr.isEmpty() false");
+            //  IsChild takes the CANDIDATE CHILD, so this asks the question in
+            //  the direction the library means it. The reverse must be false.
+            check(!addr.isChild("TestHub"),  "\"TestHub\" is not a child of TestHub.Node1");
+            check(addr.isRable("TestHub.Node1.Leaf"),
+                    "a descendant is routable through TestHub.Node1");
+            check(addr.byteSize() > 0,         "P2PAddr.byteSize() = " + addr.byteSize());
         }
 
-        // ── P2PMsg ────────────────────────────────────────────────────────────
-        byte[] payload = "Hello P2P".getBytes();
+        byte[] payload = "Hello P2P".getBytes(StandardCharsets.UTF_8);
         try (P2PMsg msg = new P2PMsg("Hub1", "Hub2", "Test.Greeting", payload)) {
-            System.out.println("P2PMsg name  : " + msg.name());
-            System.out.println("P2PMsg src   : " + msg.source());
-            System.out.println("P2PMsg dst   : " + msg.destination());
-            System.out.println("P2PMsg size  : " + msg.dataSize());
-            System.out.println("P2PMsg data  : " + new String(msg.data()));
+            check("Test.Greeting".equals(msg.name()), "P2PMsg.name()");
+            check("Hub1".equals(msg.source()),        "P2PMsg.source()");
+            check("Hub2".equals(msg.destination()),   "P2PMsg.destination()");
+            check(msg.dataSize() == payload.length,   "P2PMsg.dataSize() = " + msg.dataSize());
+            check(java.util.Arrays.equals(payload, msg.data()), "P2PMsg.data() round-trips");
+            check(msg.byteSize() > 0,                 "P2PMsg.byteSize() = " + msg.byteSize());
         }
 
-        // ── P2PeerHub ─────────────────────────────────────────────────────────
-        try (P2PeerHub hub = new P2PeerHub("SmokeHub")) {
-            boolean created = hub.createHub("SmokeHub", 1);
-            System.out.println("Hub created: " + created);
-            System.out.println("Hub address: " + hub.address());
-            System.out.println("Hub id     : " + hub.hubId());
-            hub.spawnHub();
+        // -- the hub needs the environment --------------------------------------
+        P2Pmsgcore.startup(16);
+        try {
+            try (P2PeerHub hub = new P2PeerHub("SmokeHub")) {
 
-            // Service connection
-            P2PeerConWsa svc = P2PeerConWsa.serviceFactory("SmokeHub", 19999);
-            System.out.println("Con mode (before post): " + svc.mode());
-            hub.postConnection(svc, 0);   // hub now owns svc
+                //  Auth is REQUIRED BY DEFAULT since 2026-08-18, and a hub that
+                //  cannot enforce it does not start. This test is about the object
+                //  model and the wiring, so it takes the documented migration and
+                //  says so out loud. SmokeTestAuth is the one that provisions.
+                check(hub.isAuthRequired(), "auth required by default");
+                check(hub.authArm() == ArmResult.NO_IDENTITY,
+                        "an unprovisioned hub would not arm: " + hub.authArm());
+                hub.requireAuth(false);
+                check(hub.authArm() == ArmResult.NOT_REQUIRED, "requireAuth(false) arms it");
 
-            hub.closeHub();
+                //  spawnHub() ALONE - not createHub() first. SpawnHub asserts
+                //  m_nHubID == 0, so the pair this test used to make hung a Debug
+                //  build on a modal assertion and was silently tolerated by
+                //  Release, which is the only configuration it was ever run in.
+                check("SmokeHub".equals(hub.address()), "hub.address() = " + hub.address());
+                check(hub.spawnHub() != 0L,             "spawnHub()");
+                check(hub.hubId() != 0,                 "hub.hubId() = " + hub.hubId());
+
+                P2PeerConWsa svc = P2PeerConWsa.serviceFactory("SmokeHub", 19999);
+                check(svc.mode() != 0,                  "service connection mode = " + svc.mode());
+                check(hub.postConnection(svc, 0),       "postConnection() - the hub owns it now");
+
+                hub.closeHub();
+            }
+        } finally {
+            P2Pmsgcore.cleanup();
         }
 
-        P2Pmsgcore_c.p2pmsgcore_cleanup();   // tear the environment back down
-        System.out.println("Smoke test passed.");
+        System.out.println(fails == 0 ? "\nSmokeTest passed." : "\nSmokeTest FAILED (" + fails + ")");
+        if (fails != 0) System.exit(1);
     }
 }
