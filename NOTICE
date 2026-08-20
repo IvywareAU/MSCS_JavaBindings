@@ -35,7 +35,47 @@ jextract itself is an OpenJDK tool and is not redistributed here.
 The native libraries
 -------------------------------------------------------------------------
 
-This repository contains no binaries. P2Pmsgcore.dll and Msgcore.dll are
-built from their own repositories and staged into bin\ at run time by
-run_all.ps1; both carry their own NOTICE, and P2Pmsgcore's names files
-that are NOT covered by the Apache License, Version 2.0.
+This repository contains no binaries. P2PmsgFacade.dll, P2Pmsgcore.dll and
+Msgcore.dll are built from their own repositories and staged into bin\ at
+run time by run_all.ps1; each carries its own NOTICE, and P2Pmsgcore's names
+files that are NOT covered by the Apache License, Version 2.0.
+
+A DISTRIBUTION assembled from this repository is a different thing from the
+repository itself, and its licences do not all travel together. Anything that
+ships the native libraries alongside these bindings carries components under
+two different sets of terms, and must reproduce that split rather than
+labelling the whole bundle Apache-2.0.
+
+Under the Apache License, Version 2.0:
+
+    the Java bindings in this repository
+    P2PmsgFacade.dll                    from the P2PmsgFacade repository
+    P2Pmsgcore.dll                      from the P2Pmsgcore repository
+    Msgcore.dll                         from the Msgcore repository
+
+    The three native repositories each carry their own LICENSE and NOTICE.
+    Section 4 requires all of them to accompany the binaries; this file does
+    not stand in for the other three. All three DLLs must ship together in
+    any case - the facade is loaded by full path and Windows resolves its
+    dependencies out of that same directory.
+
+Under Microsoft's Distributable Code terms - NOT Apache-2.0:
+
+    mfc140u.dll, msvcp140.dll,          Redistributable under the Visual
+    vcruntime140.dll,                   Studio licence, not under the
+    vcruntime140_1.dll (x64)            licence above.
+
+    P2Pmsgcore.dll and Msgcore.dll are MFC extension DLLs built against the
+    shared MFC and /MD runtimes, so these travel with them and cannot be
+    linked away.
+
+    The DEBUG runtimes - mfc140ud, msvcp140d, vcruntime140d - MAY NOT be
+    redistributed at all. build.ps1 stages into both bin\Debug and
+    bin\Release; only the Release set may leave the machine.
+
+    Ship the current Visual C++ redistributable. A JDK that bundles an
+    msvcp140 older than 14.40 fails on the first call into P2Pmsgcore, and
+    the JVM's own copy is what gets loaded.
+
+On Linux the native libraries carry no Microsoft component of any kind, and a
+distribution of these bindings with them is Apache-2.0 throughout.
