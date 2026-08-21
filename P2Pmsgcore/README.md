@@ -1,7 +1,7 @@
 # P2Pmsgcore – Java Panama FFI Bindings
 
 Exposes P2Pmsgcore's flat `extern "C"` surface to Java through the Panama Foreign
-Function Interface (Java 22+), with hand-written wrappers over the generated layer.
+Function Interface (Java 23+), with hand-written wrappers over the generated layer.
 
 | C++ class      | Java wrapper          | Purpose                            |
 |----------------|-----------------------|------------------------------------|
@@ -71,12 +71,33 @@ the only variable:
 | 14.36.32532 (Oracle JDK 22 / 23, OpenJDK 22 bundle) | **0xC0000005** |
 | 14.40.33810 (Temurin 21 bundle) | ok |
 | 14.44.35211 (system redist) | ok |
+| 14.42.34438 (**jextract 25's own bundled runtime**) | ok |
 
-**What to do:** run on a JDK 22+ whose `bin\msvcp140.dll` is **14.40 or newer**.
+**What to do:** run on a JDK 23+ whose `bin\msvcp140.dll` is **14.40 or newer**.
 `run_all.ps1` checks this before it runs anything and stops with an explanation
 rather than letting the JVM crash. If your JDK is older, the supported answers are
 to use a different JDK, or to build P2Pmsgcore with an older toolset — replacing
 files inside a JDK is neither.
+
+**The two requirements pinch, and on 2026-08-21 no ordinary JDK on the test
+machine satisfied both.** Compiling needs **23+** (jextract 25 emits
+`findOrThrow`); running needs a bundled CRT of **14.40+**. Every JDK 22/23
+installed there bundles 14.36, and the one bundling 14.40 is a JDK 21. The way
+out is that they need not be the same JDK: **compile with a 23+, run with
+anything 23+ whose CRT is new enough.** `jextract 25's own runtime` is both —
+JDK 25 with msvcp140 **14.42** — so it is the run JDK the suite was last
+measured on:
+
+```powershell
+cd java; mvn -q compile          # any JDK 23+
+cd ..
+.un_all.ps1 -SkipBuild -Java C:\path	o\jextract-25untimein\java.exe
+```
+
+`-SkipBuild` is required in that split, and the reason is worth knowing before
+you hit it: `run_all.ps1` points `JAVA_HOME` at the **run** JDK before calling
+Maven, and jextract's runtime is a trimmed `jlink` image with **no `javac`**, so
+letting it compile fails with nothing but *"mvn compile failed"*.
 
 ---
 
@@ -84,8 +105,8 @@ files inside a JDK is neither.
 
 | Tool        | Version  | Notes                              |
 |-------------|----------|------------------------------------|
-| Java        | **22+**  | `java.lang.foreign` left preview in 22. Verified on **23.0.2**. And see the runtime note above. |
-| jextract    | 22+      | Only needed to regenerate; the output is committed. Verified with **jextract 25**. |
+| Java        | **23+**  | `java.lang.foreign` left preview in 22, but the floor here is **23** since 2026-08-21: jextract 25 emits `SymbolLookup.findOrThrow()`, which is a 23 method. The floor is set by the generator, not by anything these bindings need. Verified on **23.0.2**. And see the runtime note above. |
+| jextract    | 25       | Only needed to regenerate; the output is committed. **Pinned rather than a floor**: jextract 22 emitted `find(...).orElseThrow()` and 25 emits `findOrThrow()`, so the tool version decides the Java floor above. Regenerating with an older one lowers it again, and that is a decision rather than an accident. |
 | Maven       | 3.9+     | `mvn compile` |
 | MSVC        | 2022     | builds the DLL |
 | A P2Pmsgcore checkout | existing | supplies the C wrapper sources, the header jextract reads, **and** the ABI manifest `AbiCoverage` checks against |
@@ -178,9 +199,11 @@ jextract ^
   P2Pmsgcore_c.h
 ```
 
-The filter should come out at **89 lines: 83 `--include-function` and 6
-`--include-typedef`.** If the function count is not 83, the header and this
-document have diverged — check the manifest.
+The filter should come out at **99 lines: 93 `--include-function` and 6
+`--include-typedef`.** If the function count is not 93, the header and this
+document have diverged — check the manifest. It was 83 until 2026-08-21, when
+the revocation and sealing defaults added ten entry points (P2Pmsgcore
+ProductionPlan.md Stage 3 steps 19 and 20).
 
 That writes four files into `...\native_\`:
 

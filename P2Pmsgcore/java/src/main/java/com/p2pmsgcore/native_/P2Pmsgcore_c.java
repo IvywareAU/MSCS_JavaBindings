@@ -55,7 +55,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2pmsgcore_startup").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2pmsgcore_startup");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -112,7 +112,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
     private static class p2pmsgcore_cleanup {
         public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(    );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2pmsgcore_cleanup").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2pmsgcore_cleanup");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -170,7 +170,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
             P2Pmsgcore_c.C_POINTER    );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_create").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_create");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -230,7 +230,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_create_str").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_create_str");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -289,7 +289,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_destroy").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_destroy");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -349,7 +349,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_c_name").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_c_name");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -409,7 +409,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_is_null").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_is_null");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -469,7 +469,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_is_empty").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_is_empty");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -529,7 +529,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_sizeof").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_sizeof");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -590,7 +590,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_is_child").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_is_child");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -651,7 +651,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_is_rable").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_is_rable");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -709,7 +709,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
             P2Pmsgcore_c.C_POINTER    );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_create").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_create");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -773,7 +773,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_create_full").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_create_full");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -833,7 +833,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_create_msgid").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_create_msgid");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -892,7 +892,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_destroy").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_destroy");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -952,7 +952,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_get_source").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_get_source");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1012,7 +1012,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_set_source").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_set_source");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1072,7 +1072,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_get_destin").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_get_destin");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1132,7 +1132,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_set_destin").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_set_destin");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1192,7 +1192,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_c_name").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_c_name");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1252,7 +1252,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_data").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_data");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1312,7 +1312,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_data_size").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_data_size");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1372,7 +1372,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_priority").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_priority");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1433,7 +1433,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_CHAR
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_set_priority").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_set_priority");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1493,7 +1493,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_sizeof").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_sizeof");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1553,7 +1553,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_is_wrapped").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_is_wrapped");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1613,7 +1613,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_is_reflected").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_is_reflected");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1676,7 +1676,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_response_factory").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_response_factory");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1737,7 +1737,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_redirect_factory").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_redirect_factory");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1799,7 +1799,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_SHORT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_client_factory").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_client_factory");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1860,7 +1860,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_SHORT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_service_factory").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_service_factory");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1919,7 +1919,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_destroy").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_destroy");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -1979,7 +1979,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_connect").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_connect");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2039,7 +2039,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_listen").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_listen");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2098,7 +2098,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_close").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_close");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2159,7 +2159,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_LONG
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_get_state").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_get_state");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2220,7 +2220,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_LONG
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_has_state").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_has_state");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2280,7 +2280,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_get_mode").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_get_mode");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2340,7 +2340,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_get_address").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_get_address");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2401,7 +2401,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_post_msg").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_post_msg");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2461,7 +2461,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_create").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_create");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2520,7 +2520,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_destroy").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_destroy");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2582,7 +2582,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_create_hub").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_create_hub");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2642,7 +2642,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_spawn_hub").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_spawn_hub");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2701,7 +2701,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_close_hub").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_close_hub");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2760,7 +2760,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_pause_hub").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_pause_hub");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2819,7 +2819,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_wakeup_hub").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_wakeup_hub");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2881,7 +2881,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_post_con").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_post_con");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -2942,7 +2942,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_con_exists").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_con_exists");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3003,7 +3003,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_post_msg").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_post_msg");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3063,7 +3063,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_get_hub_id").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_get_hub_id");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3123,7 +3123,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_get_address").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_get_address");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3183,7 +3183,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_require_auth").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_require_auth");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3243,7 +3243,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_is_auth_required").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_is_auth_required");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3305,7 +3305,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_set_identity").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_set_identity");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3366,7 +3366,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_set_allow_list").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_set_allow_list");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3426,7 +3426,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_reload_allow_list").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_reload_allow_list");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3490,7 +3490,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_provision_auth").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_provision_auth");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3550,7 +3550,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_auth_arm").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_auth_arm");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3610,7 +3610,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_auth_arm_text").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_auth_arm_text");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3670,7 +3670,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_auth_allow_list_path").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_auth_allow_list_path");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3724,6 +3724,610 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
         }
     }
 
+    private static class p2peerhub_auth_revocation_list_path {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_auth_revocation_list_path");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * const char *p2peerhub_auth_revocation_list_path(P2PeerHubHandle h)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_auth_revocation_list_path$descriptor() {
+        return p2peerhub_auth_revocation_list_path.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * const char *p2peerhub_auth_revocation_list_path(P2PeerHubHandle h)
+     * }
+     */
+    public static MethodHandle p2peerhub_auth_revocation_list_path$handle() {
+        return p2peerhub_auth_revocation_list_path.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * const char *p2peerhub_auth_revocation_list_path(P2PeerHubHandle h)
+     * }
+     */
+    public static MemorySegment p2peerhub_auth_revocation_list_path$address() {
+        return p2peerhub_auth_revocation_list_path.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * const char *p2peerhub_auth_revocation_list_path(P2PeerHubHandle h)
+     * }
+     */
+    public static MemorySegment p2peerhub_auth_revocation_list_path(MemorySegment h) {
+        var mh$ = p2peerhub_auth_revocation_list_path.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_auth_revocation_list_path", h);
+            }
+            return (MemorySegment)mh$.invokeExact(h);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_require_revocation {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_INT
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_require_revocation");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * void p2peerhub_require_revocation(P2PeerHubHandle h, int require)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_require_revocation$descriptor() {
+        return p2peerhub_require_revocation.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * void p2peerhub_require_revocation(P2PeerHubHandle h, int require)
+     * }
+     */
+    public static MethodHandle p2peerhub_require_revocation$handle() {
+        return p2peerhub_require_revocation.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * void p2peerhub_require_revocation(P2PeerHubHandle h, int require)
+     * }
+     */
+    public static MemorySegment p2peerhub_require_revocation$address() {
+        return p2peerhub_require_revocation.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * void p2peerhub_require_revocation(P2PeerHubHandle h, int require)
+     * }
+     */
+    public static void p2peerhub_require_revocation(MemorySegment h, int require) {
+        var mh$ = p2peerhub_require_revocation.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_require_revocation", h, require);
+            }
+            mh$.invokeExact(h, require);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_is_revocation_required {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            P2Pmsgcore_c.C_INT,
+            P2Pmsgcore_c.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_is_revocation_required");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerhub_is_revocation_required(P2PeerHubHandle h)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_is_revocation_required$descriptor() {
+        return p2peerhub_is_revocation_required.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerhub_is_revocation_required(P2PeerHubHandle h)
+     * }
+     */
+    public static MethodHandle p2peerhub_is_revocation_required$handle() {
+        return p2peerhub_is_revocation_required.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerhub_is_revocation_required(P2PeerHubHandle h)
+     * }
+     */
+    public static MemorySegment p2peerhub_is_revocation_required$address() {
+        return p2peerhub_is_revocation_required.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerhub_is_revocation_required(P2PeerHubHandle h)
+     * }
+     */
+    public static int p2peerhub_is_revocation_required(MemorySegment h) {
+        var mh$ = p2peerhub_is_revocation_required.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_is_revocation_required", h);
+            }
+            return (int)mh$.invokeExact(h);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_set_revocation_list {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            P2Pmsgcore_c.C_INT,
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_set_revocation_list");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerhub_set_revocation_list(P2PeerHubHandle h, const char *pathUtf8)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_set_revocation_list$descriptor() {
+        return p2peerhub_set_revocation_list.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerhub_set_revocation_list(P2PeerHubHandle h, const char *pathUtf8)
+     * }
+     */
+    public static MethodHandle p2peerhub_set_revocation_list$handle() {
+        return p2peerhub_set_revocation_list.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerhub_set_revocation_list(P2PeerHubHandle h, const char *pathUtf8)
+     * }
+     */
+    public static MemorySegment p2peerhub_set_revocation_list$address() {
+        return p2peerhub_set_revocation_list.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerhub_set_revocation_list(P2PeerHubHandle h, const char *pathUtf8)
+     * }
+     */
+    public static int p2peerhub_set_revocation_list(MemorySegment h, MemorySegment pathUtf8) {
+        var mh$ = p2peerhub_set_revocation_list.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_set_revocation_list", h, pathUtf8);
+            }
+            return (int)mh$.invokeExact(h, pathUtf8);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_require_seal {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_INT
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_require_seal");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * void p2peerhub_require_seal(P2PeerHubHandle h, int require)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_require_seal$descriptor() {
+        return p2peerhub_require_seal.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * void p2peerhub_require_seal(P2PeerHubHandle h, int require)
+     * }
+     */
+    public static MethodHandle p2peerhub_require_seal$handle() {
+        return p2peerhub_require_seal.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * void p2peerhub_require_seal(P2PeerHubHandle h, int require)
+     * }
+     */
+    public static MemorySegment p2peerhub_require_seal$address() {
+        return p2peerhub_require_seal.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * void p2peerhub_require_seal(P2PeerHubHandle h, int require)
+     * }
+     */
+    public static void p2peerhub_require_seal(MemorySegment h, int require) {
+        var mh$ = p2peerhub_require_seal.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_require_seal", h, require);
+            }
+            mh$.invokeExact(h, require);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_is_seal_required {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            P2Pmsgcore_c.C_INT,
+            P2Pmsgcore_c.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_is_seal_required");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerhub_is_seal_required(P2PeerHubHandle h)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_is_seal_required$descriptor() {
+        return p2peerhub_is_seal_required.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerhub_is_seal_required(P2PeerHubHandle h)
+     * }
+     */
+    public static MethodHandle p2peerhub_is_seal_required$handle() {
+        return p2peerhub_is_seal_required.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerhub_is_seal_required(P2PeerHubHandle h)
+     * }
+     */
+    public static MemorySegment p2peerhub_is_seal_required$address() {
+        return p2peerhub_is_seal_required.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerhub_is_seal_required(P2PeerHubHandle h)
+     * }
+     */
+    public static int p2peerhub_is_seal_required(MemorySegment h) {
+        var mh$ = p2peerhub_is_seal_required.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_is_seal_required", h);
+            }
+            return (int)mh$.invokeExact(h);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_set_agreement_key {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            P2Pmsgcore_c.C_INT,
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_INT
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_set_agreement_key");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerhub_set_agreement_key(P2PeerHubHandle h, const char *pathUtf8, int createIfAbsent)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_set_agreement_key$descriptor() {
+        return p2peerhub_set_agreement_key.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerhub_set_agreement_key(P2PeerHubHandle h, const char *pathUtf8, int createIfAbsent)
+     * }
+     */
+    public static MethodHandle p2peerhub_set_agreement_key$handle() {
+        return p2peerhub_set_agreement_key.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerhub_set_agreement_key(P2PeerHubHandle h, const char *pathUtf8, int createIfAbsent)
+     * }
+     */
+    public static MemorySegment p2peerhub_set_agreement_key$address() {
+        return p2peerhub_set_agreement_key.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerhub_set_agreement_key(P2PeerHubHandle h, const char *pathUtf8, int createIfAbsent)
+     * }
+     */
+    public static int p2peerhub_set_agreement_key(MemorySegment h, MemorySegment pathUtf8, int createIfAbsent) {
+        var mh$ = p2peerhub_set_agreement_key.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_set_agreement_key", h, pathUtf8, createIfAbsent);
+            }
+            return (int)mh$.invokeExact(h, pathUtf8, createIfAbsent);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_add_seal_reader {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            P2Pmsgcore_c.C_INT,
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_add_seal_reader");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerhub_add_seal_reader(P2PeerHubHandle h, const wchar_t *addr)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_add_seal_reader$descriptor() {
+        return p2peerhub_add_seal_reader.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerhub_add_seal_reader(P2PeerHubHandle h, const wchar_t *addr)
+     * }
+     */
+    public static MethodHandle p2peerhub_add_seal_reader$handle() {
+        return p2peerhub_add_seal_reader.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerhub_add_seal_reader(P2PeerHubHandle h, const wchar_t *addr)
+     * }
+     */
+    public static MemorySegment p2peerhub_add_seal_reader$address() {
+        return p2peerhub_add_seal_reader.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerhub_add_seal_reader(P2PeerHubHandle h, const wchar_t *addr)
+     * }
+     */
+    public static int p2peerhub_add_seal_reader(MemorySegment h, MemorySegment addr) {
+        var mh$ = p2peerhub_add_seal_reader.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_add_seal_reader", h, addr);
+            }
+            return (int)mh$.invokeExact(h, addr);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_add_seal_reader_u8 {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            P2Pmsgcore_c.C_INT,
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_add_seal_reader_u8");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerhub_add_seal_reader_u8(P2PeerHubHandle h, const char *addrUtf8)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_add_seal_reader_u8$descriptor() {
+        return p2peerhub_add_seal_reader_u8.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerhub_add_seal_reader_u8(P2PeerHubHandle h, const char *addrUtf8)
+     * }
+     */
+    public static MethodHandle p2peerhub_add_seal_reader_u8$handle() {
+        return p2peerhub_add_seal_reader_u8.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerhub_add_seal_reader_u8(P2PeerHubHandle h, const char *addrUtf8)
+     * }
+     */
+    public static MemorySegment p2peerhub_add_seal_reader_u8$address() {
+        return p2peerhub_add_seal_reader_u8.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerhub_add_seal_reader_u8(P2PeerHubHandle h, const char *addrUtf8)
+     * }
+     */
+    public static int p2peerhub_add_seal_reader_u8(MemorySegment h, MemorySegment addrUtf8) {
+        var mh$ = p2peerhub_add_seal_reader_u8.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_add_seal_reader_u8", h, addrUtf8);
+            }
+            return (int)mh$.invokeExact(h, addrUtf8);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_clear_seal_readers {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
+            P2Pmsgcore_c.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_clear_seal_readers");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * void p2peerhub_clear_seal_readers(P2PeerHubHandle h)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_clear_seal_readers$descriptor() {
+        return p2peerhub_clear_seal_readers.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * void p2peerhub_clear_seal_readers(P2PeerHubHandle h)
+     * }
+     */
+    public static MethodHandle p2peerhub_clear_seal_readers$handle() {
+        return p2peerhub_clear_seal_readers.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * void p2peerhub_clear_seal_readers(P2PeerHubHandle h)
+     * }
+     */
+    public static MemorySegment p2peerhub_clear_seal_readers$address() {
+        return p2peerhub_clear_seal_readers.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * void p2peerhub_clear_seal_readers(P2PeerHubHandle h)
+     * }
+     */
+    public static void p2peerhub_clear_seal_readers(MemorySegment h) {
+        var mh$ = p2peerhub_clear_seal_readers.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_clear_seal_readers", h);
+            }
+            mh$.invokeExact(h);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
     private static class p2peerhub_set_sink {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
             P2Pmsgcore_c.C_INT,
@@ -3732,7 +4336,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_set_sink").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_set_sink");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3792,7 +4396,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_create_str_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_create_str_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3852,7 +4456,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_c_name_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_c_name_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3913,7 +4517,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_is_child_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_is_child_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -3974,7 +4578,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2paddr_is_rable_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2paddr_is_rable_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4038,7 +4642,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_create_full_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_create_full_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4098,7 +4702,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_create_msgid_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_create_msgid_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4158,7 +4762,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_get_source_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_get_source_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4218,7 +4822,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_set_source_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_set_source_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4278,7 +4882,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_get_destin_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_get_destin_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4338,7 +4942,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_set_destin_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_set_destin_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4398,7 +5002,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_c_name_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_c_name_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4461,7 +5065,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_response_factory_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_response_factory_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4522,7 +5126,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peermsg_redirect_factory_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peermsg_redirect_factory_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4584,7 +5188,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_SHORT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_client_factory_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_client_factory_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4645,7 +5249,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_SHORT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_service_factory_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_service_factory_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4705,7 +5309,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerconwsa_get_address_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_get_address_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4765,7 +5369,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_create_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_create_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4827,7 +5431,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_create_hub_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_create_hub_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4888,7 +5492,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_con_exists_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_con_exists_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -4948,7 +5552,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_get_address_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_get_address_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -5010,7 +5614,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
             P2Pmsgcore_c.C_POINTER
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.find("p2peerhub_set_sink_u8").orElseThrow();
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_set_sink_u8");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }

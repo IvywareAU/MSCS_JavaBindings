@@ -41,7 +41,11 @@ import java.util.regex.Pattern;
  *       {@code NOT_REQUIRED}, and the hub runs.</li>
  *   <li><b>provisioned</b> — generate an identity, publish its half, write an
  *       allow-list naming it, and watch the same hub go {@code NO_IDENTITY} →
- *       {@code NO_ALLOW_LIST} → {@code OK} one call at a time.</li>
+ *       {@code NO_ALLOW_LIST} → {@code NO_REVOCATION} → {@code OK} one call at
+ *       a time. The third step arrived on 2026-08-21 with the revocation
+ *       gate, and it is the whole reason this test is worth having: the
+ *       sequence is the operator's actual experience, so a new step in it
+ *       shows up here before it shows up in production.</li>
  * </ol>
  *
  * <p>Phase 3 is the one that matters: it proves the Java side can perform the
@@ -171,6 +175,21 @@ public class SmokeTestAuth {
             check(hub.setAllowList(allow.toString()) == IdResult.OK, "setAllowList()");
             check(allow.toString().equals(hub.allowListPath()),
                     "allowListPath() names the file the library actually loaded");
+
+            //  ONE MORE STEP SINCE 2026-08-21, and the arm result says which:
+            //  a hub that requires auth must also hold a POSITION on
+            //  revocation. An identity and an allow-list are no longer the
+            //  whole of provisioning, and this phase is the definition of the
+            //  term - so it grows rather than opting out.
+            arm = hub.authArm();
+            check(arm == ArmResult.NO_REVOCATION,
+                    "identity + allow-list is no longer enough: " + arm);
+
+            //  The migration, said out loud. This test is not about
+            //  revocation, and declaring that is one line - it does NOT turn
+            //  revocation off, only permit its absence.
+            hub.requireRevocation(false);
+            check(!hub.isRevocationRequired(), "requireRevocation(false) took");
 
             arm = hub.authArm();
             check(arm == ArmResult.OK,   "authArm() = " + arm);

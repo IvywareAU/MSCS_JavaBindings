@@ -28,7 +28,19 @@
   <description>Java Panama FFI bindings for the P2Pmsgcore native library</description>
 
   <properties>
-    <maven.compiler.release>22</maven.compiler.release>
+    <!-- 23, RAISED FROM 22 ON 2026-08-21, and it is a supported-JDK change
+         rather than a tidy-up. jextract 25 emits SymbolLookup.findOrThrow(),
+         which arrived in JDK 23; the generated file committed before this used
+         find(...).orElseThrow(), which is the JDK 22 spelling of the same
+         thing and came out of an older jextract. So the floor is set by the
+         tool that writes the bindings, not by anything this project needs.
+
+         The alternative was to rewrite 93 call sites of GENERATED code back to
+         the 22 idiom after every regeneration. That was rejected: a committed
+         artifact that no longer matches what its generator emits is a manual
+         step nobody remembers, and it would regress silently the next time
+         somebody follows README Step 3. -->
+    <maven.compiler.release>23</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <!-- Directory holding P2Pmsgcore.dll (and the Msgcore.dll it imports).
@@ -43,13 +55,18 @@
   <build>
     <plugins>
 
-      <!-- Compile with enable-preview if needed; at minimum release 22 -->
+      <!-- Compile with enable-preview if needed; at minimum release 23 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
         <configuration>
-          <release>22</release>
+          <!-- Kept in step with maven.compiler.release above. It is spelled out
+               here as well as there because this explicit element WINS over the
+               property, which is how the 2026-08-21 bump to 23 appeared to do
+               nothing: the property moved, this did not, and the build went on
+               failing on findOrThrow with the floor apparently already raised. -->
+          <release>${maven.compiler.release}</release>
         </configuration>
       </plugin>
 

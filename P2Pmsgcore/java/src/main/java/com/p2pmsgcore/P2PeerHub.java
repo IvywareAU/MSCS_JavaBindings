@@ -240,6 +240,135 @@ public final class P2PeerHub implements AutoCloseable {
         return NativeStrings.fromU8(P2Pmsgcore_c.p2peerhub_auth_allow_list_path(handle));
     }
 
+    // ---- Revocation ------------------------------------------------------
+    // ProductionPlan.md Stage 3 step 19. Revocation had NO flat C entry point
+    // at all before 2026-08-21, which is why all four arrived at once: the
+    // arming gate below would otherwise have been unsatisfiable from Java -
+    // a caller could neither name a list nor decline one, and the hub would
+    // simply not start.
+
+    /**
+     * Loads the file naming keys this hub will refuse, whatever the allow-list
+     * says. Revocation <b>fails closed</b>: once a list is configured, a load
+     * that fails does not fall back to "nothing is revoked" — every
+     * verification is refused until a reload succeeds.
+     */
+    public IdResult setRevocationList(String path) {
+        checkOpen();
+        try (Arena tmp = Arena.ofConfined()) {
+            return IdResult.fromCode(
+                    P2Pmsgcore_c.p2peerhub_set_revocation_list(handle, NativeStrings.toU8(path, tmp)));
+        }
+    }
+
+    /** The revocation list path this hub was given, or {@code null}. */
+    public String revocationListPath() {
+        checkOpen();
+        return NativeStrings.fromU8(P2Pmsgcore_c.p2peerhub_auth_revocation_list_path(handle));
+    }
+
+    /**
+     * Must this hub hold a <i>position</i> on revocation before it will arm?
+     * On by default since 2026-08-21.
+     *
+     * <p>"Position" is the word and not "list", because there are two of them
+     * and both count: name a list, or call this with {@code false}. What is no
+     * longer reachable is arriving at "this hub can never withdraw a key" by
+     * saying nothing.
+     *
+     * <p>Turning it off does <b>not</b> turn revocation off. A list named
+     * anyway is still loaded, still enforced and still fails closed; this
+     * governs only whether the <i>absence</i> of one is permitted.
+     */
+    public void requireRevocation(boolean require) {
+        checkOpen();
+        P2Pmsgcore_c.p2peerhub_require_revocation(handle, require ? 1 : 0);
+    }
+
+    /** Does this hub demand a revocation position before arming? True unless turned off. */
+    public boolean isRevocationRequired() {
+        checkOpen();
+        return P2Pmsgcore_c.p2peerhub_is_revocation_required(handle) != 0;
+    }
+
+    // ---- End-to-end sealing ----------------------------------------------
+    // ProductionPlan.md Stage 3 step 20.
+
+    /**
+     * Loads this hub's static agreement key — the half that lets it
+     * <b>open</b> a body sealed to it — creating it if {@code createIfAbsent}
+     * and it is not there.
+     *
+     * <p>A hub that requires sealing and holds none of this still starts: a
+     * relay legitimately holds no keys, since it forwards blocks it cannot
+     * read. It warns once at arm time and cannot open anything addressed to
+     * it.
+     */
+    public IdResult setAgreementKey(String path, boolean createIfAbsent) {
+        checkOpen();
+        try (Arena tmp = Arena.ofConfined()) {
+            return IdResult.fromCode(P2Pmsgcore_c.p2peerhub_set_agreement_key(
+                    handle, NativeStrings.toU8(path, tmp), createIfAbsent ? 1 : 0));
+        }
+    }
+
+    /**
+     * Seal a body that will cross an intermediate hub, or do not send it. On
+     * by default since 2026-08-21, and it <b>refuses rather than downgrades</b>.
+     *
+     * <p>A message whose destination is not the peer on the far end of the
+     * link is sealed to that destination before it goes. If this hub holds no
+     * agreement key for that destination the message is <b>dropped</b> and
+     * said so — it does not travel in clear.
+     *
+     * <p>The break is wide: a tree that has never published agreement keys
+     * stops carrying relayed traffic the moment this is on, and
+     * {@code requireSeal(false)} is the migration. <b>Sealing and broadcast do
+     * not compose today</b> — a broadcast has no single destination and the
+     * agreement lookup is exact, so a broadcast can never be sealed and is
+     * always refused while this is on.
+     */
+    public void requireSeal(boolean require) {
+        checkOpen();
+        P2Pmsgcore_c.p2peerhub_require_seal(handle, require ? 1 : 0);
+    }
+
+    /** Does this hub seal relayed bodies, refusing to send what it cannot seal? */
+    public boolean isSealRequired() {
+        checkOpen();
+        return P2Pmsgcore_c.p2peerhub_is_seal_required(handle) != 0;
+    }
+
+    /**
+     * Names a hub that may <b>also</b> read what this hub seals — the answer
+     * to "an intermediate hub has to see the body".
+     *
+     * <p>The sender decides, and only the sender. The reader set is bound into
+     * the sealed body's additional data and its signature, so no relay can add
+     * itself and no policy on a relay can add it. Everything named here can
+     * read <i>every</i> body this hub seals, which is a trust decision rather
+     * than a routing one.
+     *
+     * <p>At most seven of them (the destination takes the eighth slot), each
+     * resolved through the allow-list at seal time — so revoking a reader's
+     * agreement key removes its access without editing this list. A name that
+     * cannot be resolved then <b>refuses the send</b> rather than sealing to
+     * fewer readers.
+     */
+    public IdResult addSealReader(String addr) {
+        checkOpen();
+        try (Arena tmp = Arena.ofConfined()) {
+            return IdResult.fromCode(
+                    P2Pmsgcore_c.p2peerhub_add_seal_reader_u8(handle, NativeStrings.toU8(addr, tmp)));
+        }
+    }
+
+    /** Forgets every extra reader named by {@link #addSealReader}. */
+    public void clearSealReaders() {
+        checkOpen();
+        P2Pmsgcore_c.p2peerhub_clear_seal_readers(handle);
+    }
+
     /** What {@link #provisionAuth} found or did. */
     public record Provisioned(IdResult result, String fingerprint, boolean created) {
         /** True if the identity is now loaded. */

@@ -30,6 +30,22 @@ import com.p2pmsgcore.native_.P2Pmsgcore_c;
  * <p>{@link #NOT_REQUIRED} is <b>not</b> the same as armed-and-authenticating. It
  * means somebody called {@code requireAuth(false)}, and the hub will start and
  * accept anyone.
+ *
+ * <p><b>Since 2026-08-21 the gate asks a second question</b> (P2Pmsgcore
+ * ProductionPlan.md Stage 3 step 19): a hub that requires authentication must
+ * also hold a <i>position</i> on revocation. Name a list, or say
+ * {@code requireRevocation(false)}. A hub that does neither reports
+ * {@link #NO_REVOCATION} and does not start — which is a wider break than the
+ * 2026-08-18 one, because the state it refuses is a <i>working</i> hub rather
+ * than one that would have refused every peer anyway. It is a gate regardless,
+ * because revocation is the only mechanism in the tree for <b>withdrawing</b>
+ * trust already granted: an allow-list only ever adds.
+ *
+ * <p>{@link #REVOCATION_UNUSABLE} is the other half and rests on the older
+ * argument exactly — a configured list that will not load makes every key read
+ * as revoked, so that hub refuses <i>everyone</i>. It used to do that at the
+ * first login, having started happily; it now does it at startup. There is no
+ * opt-out for that one, and {@code requireRevocation(false)} does not excuse it.
  */
 public enum ArmResult {
 
@@ -44,7 +60,18 @@ public enum ArmResult {
     /** An allow-list is configured and the last load of it failed — missing, unreadable, or one bad line. */
     ALLOW_UNUSABLE(4),
     /** The allow-list loads and parses, and names nobody. */
-    EMPTY_ALLOW(5);
+    EMPTY_ALLOW(5),
+    /**
+     * No revocation list is configured, and {@code requireRevocation(false)}
+     * was never called to say that was deliberate. New 2026-08-21.
+     */
+    NO_REVOCATION(6),
+    /**
+     * A revocation list is configured and the last load of it failed. That
+     * state fails closed — every key reads as revoked — so the hub would
+     * refuse every peer. New 2026-08-21.
+     */
+    REVOCATION_UNUSABLE(7);
 
     private final int code;
 
