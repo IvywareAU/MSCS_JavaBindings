@@ -12,8 +12,10 @@ Function Interface (Java 23+), with hand-written wrappers over the generated lay
 | —              | `P2Pmsgcore`          | Process lifecycle (`startup` / `cleanup`) |
 | —              | `ArmResult`, `IdResult` | The two result enums the ABI returns as `int` |
 
-**Status: 6/6 on Debug|x64 and 6/6 on Release|x64**, measured 2026-08-20 against
-`P2Pmsgcore.dll` 0.10.0.0 (83 flat C entry points) on JDK 23.0.2. Run them with
+**Status: 6/6 on Debug|x64 and 6/6 on Release|x64**, re-measured 2026-08-22 against
+`P2Pmsgcore.dll` 0.10.0.0 (**93** flat C entry points, all 93 covered) — compiled on
+JDK 23.0.2 and run on jextract 25's own runtime, for the reason under *The two
+requirements pinch* below. Run them with
 `.\run_all.ps1`.
 
 ---
@@ -91,7 +93,9 @@ measured on:
 ```powershell
 cd java; mvn -q compile          # any JDK 23+
 cd ..
-.un_all.ps1 -SkipBuild -Java C:\path	o\jextract-25untimein\java.exe
+.
+un_all.ps1 -SkipBuild -Java C:\path	o\jextract-25
+untimein\java.exe
 ```
 
 `-SkipBuild` is required in that split, and the reason is worth knowing before
@@ -221,15 +225,17 @@ Then run `AbiCoverage` — it is the check that the regeneration was complete.
 > *unprototyped* function, which jextract emits as a variadic invoker class rather
 > than a plain no-arg method — keep the `void`.
 
-> **JDK 22/23 shim:** jextract 25's output calls `SymbolLookup.findOrThrow`, added
-> in **JDK 24**. To build on 22/23, rewrite it after generating:
+> **JDK 22 shim:** jextract 25's output calls `SymbolLookup.findOrThrow`, added
+> in **JDK 23** — measured rather than read: this project compiles on JDK 23.0.2 with
+> the pom at `release 23`. *(An earlier draft of this note said 24. It is 23, and 22 is
+> the only version that needs the shim.)* To build on **22**, rewrite it after generating:
 > ```powershell
 > Get-ChildItem ..\java\src\main\java\com\p2pmsgcore\native_\*.java | ForEach-Object {
 >   (Get-Content $_) -replace 'SYMBOL_LOOKUP\.findOrThrow\((\"[^\"]+\")\)',
 >                             'SYMBOL_LOOKUP.find($1).orElseThrow()' | Set-Content $_
 > }
 > ```
-> — or bump the pom to `release 24`+ and build with a matching JDK.
+> — or leave the pom at `release 23` and build with a matching JDK, which is what it does.
 
 ---
 
