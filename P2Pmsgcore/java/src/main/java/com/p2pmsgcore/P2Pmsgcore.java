@@ -49,12 +49,12 @@ public final class P2Pmsgcore {
      * @throws IllegalStateException if the environment could not be initialised
      */
     public static void startup(int maxHubs) {
-        if (P2Pmsgcore_c.p2pmsgcore_startup(maxHubs) == 0)
-            throw new IllegalStateException("p2pmsgcore_startup(" + maxHubs + ") failed");
+        if (P2Pmsgcore_c.targetcore_startup(maxHubs) == 0)
+            throw new IllegalStateException("targetcore_startup(" + maxHubs + ") failed");
     }
 
     /** Tears the environment back down. Safe to call once, at the end. */
     public static void cleanup() {
-        P2Pmsgcore_c.p2pmsgcore_cleanup();
+        P2Pmsgcore_c.targetcore_cleanup();
     }
 }

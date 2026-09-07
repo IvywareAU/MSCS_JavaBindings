@@ -12,11 +12,16 @@ Function Interface (Java 23+), with hand-written wrappers over the generated lay
 | —              | `P2Pmsgcore`          | Process lifecycle (`startup` / `cleanup`) |
 | —              | `ArmResult`, `IdResult` | The two result enums the ABI returns as `int` |
 
-**Status: 6/6 on Debug|x64 and 6/6 on Release|x64**, re-measured 2026-08-22 against
-`P2Pmsgcore.dll` 0.10.0.0 (**93** flat C entry points, all 93 covered) — compiled on
-JDK 23.0.2 and run on jextract 25's own runtime, for the reason under *The two
-requirements pinch* below. Run them with
-`.\run_all.ps1`.
+**Status: 6/6**, re-measured 2026-09-08 against `TargetCore.dll` 3.0.0.0
+(**101** flat C entry points, all 101 covered) on a single **JDK 25.0.4.1** whose
+bundled msvcp140 is 14.40 — see *The two requirements pinch* below, which one JDK
+now satisfies on its own. Run them with `.\run_all.ps1`.
+
+> **Renamed 2026-09-08.** The library this binds was `TargetCore.dll` and is now
+> `TargetCore.dll`; `p2pmsgcore_startup` / `_cleanup` became `targetcore_startup` /
+> `_cleanup`, and eight trust and link-policy entry points arrived with it. The Java
+> package names are unchanged (`com.p2pmsgcore`), as is the generated class name
+> `P2Pmsgcore_c`, so callers see the rename only in those two method names.
 
 ---
 
@@ -60,7 +65,7 @@ any kind. `hs_err_pid*.log` blames `msvcp140.dll+0x12f58`.
 **Cause:** a JDK ships its own `msvcp140.dll` / `VCRUNTIME140.dll` in `bin\`, and
 `jvm.dll` imports them, so they are loaded before any of your code runs. Windows
 resolves a DLL's imports against whatever module of that base name is *already*
-loaded — so `P2Pmsgcore.dll` gets the JDK's copy, not the system's, and no `PATH`,
+loaded — so `TargetCore.dll` gets the JDK's copy, not the system's, and no `PATH`,
 `java.library.path` or load order can change that. P2Pmsgcore is built with MSVC
 14.4x and uses `std::mutex`, whose constructor became `constexpr` in toolset
 **14.40** (VS 2022 17.10); against an older runtime it dereferences null.
@@ -87,21 +92,23 @@ machine satisfied both.** Compiling needs **23+** (jextract 25 emits
 installed there bundles 14.36, and the one bundling 14.40 is a JDK 21. The way
 out is that they need not be the same JDK: **compile with a 23+, run with
 anything 23+ whose CRT is new enough.** `jextract 25's own runtime` is both —
-JDK 25 with msvcp140 **14.42** — so it is the run JDK the suite was last
-measured on:
+JDK 25 with msvcp140 **14.42** — and was the run JDK through 2026-09-07:
 
 ```powershell
 cd java; mvn -q compile          # any JDK 23+
 cd ..
-.
-un_all.ps1 -SkipBuild -Java C:\path	o\jextract-25
-untimein\java.exe
+.\run_all.ps1 -SkipBuild -Java C:\path\to\jextract-25\runtime\bin\java.exe
 ```
 
 `-SkipBuild` is required in that split, and the reason is worth knowing before
 you hit it: `run_all.ps1` points `JAVA_HOME` at the **run** JDK before calling
 Maven, and jextract's runtime is a trimmed `jlink` image with **no `javac`**, so
 letting it compile fails with nothing but *"mvn compile failed"*.
+
+**Since 2026-09-08 that split is no longer needed here.** A single JDK 25.0.4.1
+bundling msvcp140 **14.40** satisfies both requirements, so `run_all.ps1` compiles
+and runs on the one JVM and `-SkipBuild` can be dropped. The split above is kept
+because it is still the answer on any machine whose only 23+ JDK bundles 14.36.
 
 ---
 
@@ -113,10 +120,10 @@ letting it compile fails with nothing but *"mvn compile failed"*.
 | jextract    | 25       | Only needed to regenerate; the output is committed. **Pinned rather than a floor**: jextract 22 emitted `find(...).orElseThrow()` and 25 emits `findOrThrow()`, so the tool version decides the Java floor above. Regenerating with an older one lowers it again, and that is a decision rather than an accident. |
 | Maven       | 3.9+     | `mvn compile` |
 | MSVC        | 2022     | builds the DLL |
-| A P2Pmsgcore checkout | existing | supplies the C wrapper sources, the header jextract reads, **and** the ABI manifest `AbiCoverage` checks against |
+| A TargetCore checkout | existing | supplies the C wrapper sources, the header jextract reads, **and** the ABI manifest `AbiCoverage` checks against |
 
-Throughout, `<P2Pmsgcore>` means the root of that checkout — the directory holding
-`P2Pmsgcore(2022).vcxproj` and `P2Pmsgcore_c.h`.
+Throughout, `<TargetCore>` means the root of that checkout — the directory holding
+`TargetCore(2022).vcxproj` and `TargetCore_c.h`.
 
 ---
 
@@ -126,33 +133,33 @@ Throughout, `<P2Pmsgcore>` means the root of that checkout — the directory hol
 .\run_all.ps1                      # stage DLLs, mvn compile, run all six tests
 .\run_all.ps1 -Config Debug
 .\run_all.ps1 -Java "C:\path\to\jdk\bin\java.exe"
-.\run_all.ps1 -LibDir D:\build\P2Pmsgcore\Release
+.\run_all.ps1 -LibDir D:\build\TargetCore\Release
 ```
 
-It stages `P2Pmsgcore.dll` **and** the `Msgcore.dll` from the same build into
+It stages `TargetCore.dll` **and** the `Msgcore.dll` from the same build into
 `bin\`, puts that directory on `PATH`, and reports each test by exit code
 (0 PASS, 1 FAIL, 2 SETUP, 3 INCONCLUSIVE).
 
 Both DLLs must come from the same build. A mismatched pair produces the least
-helpful error in this toolchain — `Cannot open library: P2Pmsgcore.dll`, naming
+helpful error in this toolchain — `Cannot open library: TargetCore.dll`, naming
 the DLL that *was* found and saying nothing about the dependency that was not.
 
 ---
 
 ## Step 1 – Build the DLL
 
-**The C wrapper lives in P2Pmsgcore, not here.** `P2Pmsgcore_c.h`,
-`P2Pmsgcore_c.cpp` and `P2Pmsgcore_c_u8.cpp` are ordinary sources of that project,
-listed in both `P2Pmsgcore(2022).vcxproj` and its `CMakeLists.txt`, so they are
-compiled into `P2Pmsgcore.dll` and `libp2pmsgcore.so` by an ordinary build.
+**The C wrapper lives in TargetCore, not here.** `TargetCore_c.h`,
+`TargetCore_c.cpp` and `TargetCore_c_u8.cpp` are ordinary sources of that project,
+listed in both `TargetCore(2022).vcxproj` and its `CMakeLists.txt`, so they are
+compiled into `TargetCore.dll` and `libtargetcore.so` by an ordinary build.
 
 > This tree used to carry its own copy under `native\`, and Step 1 used to be
-> "copy these three files into P2Pmsgcore". That copy was **deleted on
+> "copy these three files into TargetCore". That copy was **deleted on
 > 2026-08-14**: an ABI definition duplicated across two repositories drifts, and
 > this one already had — the copy here sat several fixes behind the library it
 > described, including the handle registry every entry point now depends on.
 
-In the project's **Preprocessor Definitions** make sure `P2Pmsgcore_EXPORTS` is
+In the project's **Preprocessor Definitions** make sure `TargetCore_EXPORTS` is
 defined (it already is for the DLL target; the static `DebugLib`/`ReleaseLib`
 configurations define `P2Pmsgcore_STATIC` instead, which expands `P2PC_API` to
 nothing — those cannot be loaded by Panama, which needs a shared library).
@@ -162,12 +169,12 @@ cmake --build build-win-cmake --config Release --target p2pmsgcore
 ```
 
 Confirm the surface really is exported — a DLL that built fine still exports
-nothing if `P2Pmsgcore_EXPORTS` was missing:
+nothing if `TargetCore_EXPORTS` was missing:
 
 ```
-python <P2Pmsgcore>\.github\ci\check_abi_exports.py ^
-       --library build-win-cmake\P2Pmsgcore\Release\p2pmsgcore.dll ^
-       --manifest <P2Pmsgcore>\.github\ci\abi-flat.manifest ^
+python <TargetCore>\.github\ci\check_abi_exports.py ^
+       --library build-win-cmake\TargetCore\Release\TargetCore.dll ^
+       --manifest <TargetCore>\.github\ci\abi-flat.manifest ^
        --dumpbin  "<VS>\VC\Tools\MSVC\<ver>\bin\Hostx64\x64\dumpbin.exe"
 ```
 
@@ -187,27 +194,29 @@ Run bare, jextract also emits every declaration reachable through
 Filter the includes to this header and set the class name:
 
 ```bat
-cd <P2Pmsgcore>
+cd <TargetCore>
 
 :: 1) dump every include option, then keep only the ones from THIS header
-jextract --dump-includes jx_dump.txt P2Pmsgcore_c.h
-findstr /R "^--include-" jx_dump.txt | findstr "P2Pmsgcore_c.h" > jx_filter.args
+jextract --dump-includes jx_dump.txt TargetCore_c.h
+findstr /R "^--include-" jx_dump.txt | findstr "TargetCore_c.h" > jx_filter.args
 
 :: 2) generate, filtered, with the class name the wrappers expect
 jextract ^
   --output <bindings>\java\src\main\java ^
   --target-package com.p2pmsgcore.native_ ^
   --header-class-name P2Pmsgcore_c ^
-  --library P2Pmsgcore ^
+  --library TargetCore ^
   @jx_filter.args ^
-  P2Pmsgcore_c.h
+  TargetCore_c.h
 ```
 
-The filter should come out at **99 lines: 93 `--include-function` and 6
-`--include-typedef`.** If the function count is not 93, the header and this
+The filter should come out at **107 lines: 101 `--include-function` and 6
+`--include-typedef`.** If the function count is not 101, the header and this
 document have diverged — check the manifest. It was 83 until 2026-08-21, when
-the revocation and sealing defaults added ten entry points (P2Pmsgcore
-ProductionPlan.md Stage 3 steps 19 and 20).
+the revocation and sealing defaults added ten entry points (TargetCore
+ProductionPlan.md Stage 3 steps 19 and 20), and 93 until 2026-09-08, when the
+rename brought `targetcore_startup` / `_cleanup` and eight trust and link-policy
+entry points.
 
 That writes four files into `...\native_\`:
 
@@ -256,7 +265,7 @@ with the directory holding both DLLs **on `PATH`**.
 > jextract 25 emits `SymbolLookup.libraryLookup(System.mapLibraryName("P2Pmsgcore"), …)`,
 > which goes through the OS loader search — executable directory, System32, `PATH` —
 > and does not consult `java.library.path` at all. A wrong path now produces
-> `IllegalArgumentException: Cannot open library: P2Pmsgcore.dll` from a static
+> `IllegalArgumentException: Cannot open library: TargetCore.dll` from a static
 > initialiser. `run_all.ps1` sets `PATH` for you.
 
 ---
@@ -437,10 +446,10 @@ two days earlier and nothing was checking. Every line of it is now an assertion.
 The C wrapper is **not** in this repository — it is part of P2Pmsgcore:
 
 ```
-<P2Pmsgcore>\
-├── P2Pmsgcore_c.h               <- extern "C" wrapper header (jextract reads this)
-├── P2Pmsgcore_c.cpp
-├── P2Pmsgcore_c_u8.cpp          <- the _u8 entry points
+<TargetCore>\
+├── TargetCore_c.h               <- extern "C" wrapper header (jextract reads this)
+├── TargetCore_c.cpp
+├── TargetCore_c_u8.cpp          <- the _u8 entry points
 └── .github\ci\abi-flat.manifest <- what AbiCoverage checks against
 ```
 

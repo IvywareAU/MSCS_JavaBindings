@@ -18,7 +18,7 @@
 #
 #   .\run_all.ps1
 #   .\run_all.ps1 -Config Debug
-#   .\run_all.ps1 -LibDir D:\path\holding\P2Pmsgcore.dll
+#   .\run_all.ps1 -LibDir D:\path\holding\TargetCore.dll
 #
 # Exit codes per test: 0 PASS, 1 FAIL, 2 SETUP, 3 INCONCLUSIVE.
 
@@ -40,7 +40,7 @@ $bin  = Join-Path $root 'bin'
 # This is not paranoia. A JDK ships its own msvcp140.dll / vcruntime140*.dll in
 # bin\, and Windows binds a DLL's imports to whatever module of that base name is
 # ALREADY loaded -- which by the time Panama gets a look in is the JDK's copy, not
-# the system one. P2Pmsgcore.dll is built with MSVC 14.4x and uses std::mutex,
+# the system one. TargetCore.dll is built with MSVC 14.4x and uses std::mutex,
 # whose constructor became constexpr in toolset 14.40 (VS 2022 17.10); against an
 # older msvcp140 the first call into the library dies with 0xC0000005 inside
 # msvcp140, on the JVM's own stack, with no diagnostic at all.
@@ -71,7 +71,7 @@ if (Test-Path $crt) {
     Write-Host "bundled  : msvcp140 $v"
     if ($mm -lt [version]'14.40.0.0') {
         Write-Host ""
-        Write-Host "STOP: this JDK bundles msvcp140 $v, and P2Pmsgcore.dll needs 14.40 or newer." -ForegroundColor Red
+        Write-Host "STOP: this JDK bundles msvcp140 $v, and TargetCore.dll needs 14.40 or newer." -ForegroundColor Red
         Write-Host "      Windows will load the JDK's copy in preference to the system one, and the" -ForegroundColor Red
         Write-Host "      first call into the library will die with 0xC0000005 and no message." -ForegroundColor Red
         Write-Host "      Use a JDK 22+ whose bin\msvcp140.dll is 14.40 or later. See README.md." -ForegroundColor Red
@@ -90,16 +90,16 @@ if (-not $LibDir) {
         "$root\..\..\MSCS\P2Pmsgcore\out\x64\$Config"
     )
     foreach ($c in $candidates) {
-        if (Test-Path (Join-Path $c 'p2pmsgcore.dll')) { $LibDir = $c; break }
-        if (Test-Path (Join-Path $c 'P2Pmsgcore.dll')) { $LibDir = $c; break }
+        if (Test-Path (Join-Path $c 'targetcore.dll')) { $LibDir = $c; break }
+        if (Test-Path (Join-Path $c 'TargetCore.dll')) { $LibDir = $c; break }
     }
 }
-if (-not $LibDir) { throw "no P2Pmsgcore.dll found; pass -LibDir" }
+if (-not $LibDir) { throw "no TargetCore.dll found; pass -LibDir" }
 
-# Msgcore.dll must come from the SAME build as P2Pmsgcore.dll. A recursive
+# Msgcore.dll must come from the SAME build as TargetCore.dll. A recursive
 # search finds several copies of that name across the tree - the P2PeerFs staging
 # dirs carry their own - and pairing a mismatched one produces the least helpful
-# error in this whole toolchain: "Cannot open library: P2Pmsgcore.dll", which
+# error in this whole toolchain: "Cannot open library: TargetCore.dll", which
 # names the DLL that WAS found and says nothing about the dependency that was not.
 $msgcoreDir = Join-Path (Split-Path (Split-Path $LibDir -Parent) -Parent) "Msgcore\$Config"
 $msgcore    = Get-Item (Join-Path $msgcoreDir 'msgcore.dll') -ErrorAction SilentlyContinue
@@ -107,14 +107,14 @@ if (-not $msgcore) {
     $msgcore = Get-Item (Join-Path $LibDir 'Msgcore.dll') -ErrorAction SilentlyContinue
 }
 if (-not $msgcore) {
-    throw "no Msgcore.dll beside the P2Pmsgcore.dll in $LibDir (tried $msgcoreDir) -- " +
-          "P2Pmsgcore.dll imports it, and a copy from another build will not do"
+    throw "no Msgcore.dll beside the TargetCore.dll in $LibDir (tried $msgcoreDir) -- " +
+          "TargetCore.dll imports it, and a copy from another build will not do"
 }
 
 New-Item -ItemType Directory -Force -Path $bin | Out-Null
-Copy-Item (Join-Path $LibDir 'p2pmsgcore.dll') (Join-Path $bin 'P2Pmsgcore.dll') -Force -ErrorAction SilentlyContinue
-if (-not (Test-Path (Join-Path $bin 'P2Pmsgcore.dll'))) {
-    Copy-Item (Join-Path $LibDir 'P2Pmsgcore.dll') (Join-Path $bin 'P2Pmsgcore.dll') -Force
+Copy-Item (Join-Path $LibDir 'targetcore.dll') (Join-Path $bin 'TargetCore.dll') -Force -ErrorAction SilentlyContinue
+if (-not (Test-Path (Join-Path $bin 'TargetCore.dll'))) {
+    Copy-Item (Join-Path $LibDir 'TargetCore.dll') (Join-Path $bin 'TargetCore.dll') -Force
 }
 Copy-Item $msgcore.FullName (Join-Path $bin 'Msgcore.dll') -Force
 Write-Host "staged   : $bin  (from $LibDir)"
@@ -137,7 +137,7 @@ if (-not $SkipBuild) {
 # ---------------------------------------------------------------------------
 # AbiCoverage reads the covered-surface manifest out of the P2Pmsgcore checkout
 # rather than a copy kept here, because a copy is exactly what drifted last time.
-$manifest = (Resolve-Path "$root\..\..\MSCS\P2Pmsgcore\.github\ci\abi-flat.manifest" -ErrorAction SilentlyContinue)
+$manifest = (Resolve-Path "$root\..\..\MSCS\TargetCore\.github\ci\abi-flat.manifest" -ErrorAction SilentlyContinue)
 if (-not $manifest) { $manifest = '' }
 Write-Host "manifest : $manifest"
 

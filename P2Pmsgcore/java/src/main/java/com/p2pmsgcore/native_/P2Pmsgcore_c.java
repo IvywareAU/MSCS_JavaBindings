@@ -20,7 +20,7 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
 
     static final Arena LIBRARY_ARENA = Arena.ofAuto();
 
-    static final SymbolLookup SYMBOL_LOOKUP = SymbolLookup.libraryLookup(System.mapLibraryName("P2Pmsgcore"), LIBRARY_ARENA)
+    static final SymbolLookup SYMBOL_LOOKUP = SymbolLookup.libraryLookup(System.mapLibraryName("TargetCore"), LIBRARY_ARENA)
             .or(SymbolLookup.loaderLookup())
             .or(Linker.nativeLinker().defaultLookup());
 
@@ -49,13 +49,13 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
      */
     public static final AddressLayout P2PeerHubHandle = P2Pmsgcore_c.C_POINTER;
 
-    private static class p2pmsgcore_startup {
+    private static class targetcore_startup {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
             P2Pmsgcore_c.C_INT,
             P2Pmsgcore_c.C_INT
         );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2pmsgcore_startup");
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("targetcore_startup");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -63,43 +63,43 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
     /**
      * Function descriptor for:
      * {@snippet lang=c :
-     * int p2pmsgcore_startup(unsigned int nMaxHubs)
+     * int targetcore_startup(unsigned int nMaxHubs)
      * }
      */
-    public static FunctionDescriptor p2pmsgcore_startup$descriptor() {
-        return p2pmsgcore_startup.DESC;
+    public static FunctionDescriptor targetcore_startup$descriptor() {
+        return targetcore_startup.DESC;
     }
 
     /**
      * Downcall method handle for:
      * {@snippet lang=c :
-     * int p2pmsgcore_startup(unsigned int nMaxHubs)
+     * int targetcore_startup(unsigned int nMaxHubs)
      * }
      */
-    public static MethodHandle p2pmsgcore_startup$handle() {
-        return p2pmsgcore_startup.HANDLE;
+    public static MethodHandle targetcore_startup$handle() {
+        return targetcore_startup.HANDLE;
     }
 
     /**
      * Address for:
      * {@snippet lang=c :
-     * int p2pmsgcore_startup(unsigned int nMaxHubs)
+     * int targetcore_startup(unsigned int nMaxHubs)
      * }
      */
-    public static MemorySegment p2pmsgcore_startup$address() {
-        return p2pmsgcore_startup.ADDR;
+    public static MemorySegment targetcore_startup$address() {
+        return targetcore_startup.ADDR;
     }
 
     /**
      * {@snippet lang=c :
-     * int p2pmsgcore_startup(unsigned int nMaxHubs)
+     * int targetcore_startup(unsigned int nMaxHubs)
      * }
      */
-    public static int p2pmsgcore_startup(int nMaxHubs) {
-        var mh$ = p2pmsgcore_startup.HANDLE;
+    public static int targetcore_startup(int nMaxHubs) {
+        var mh$ = targetcore_startup.HANDLE;
         try {
             if (TRACE_DOWNCALLS) {
-                traceDowncall("p2pmsgcore_startup", nMaxHubs);
+                traceDowncall("targetcore_startup", nMaxHubs);
             }
             return (int)mh$.invokeExact(nMaxHubs);
         } catch (Error | RuntimeException ex) {
@@ -109,10 +109,10 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
         }
     }
 
-    private static class p2pmsgcore_cleanup {
+    private static class targetcore_cleanup {
         public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(    );
 
-        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2pmsgcore_cleanup");
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("targetcore_cleanup");
 
         public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
     }
@@ -120,43 +120,43 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
     /**
      * Function descriptor for:
      * {@snippet lang=c :
-     * void p2pmsgcore_cleanup()
+     * void targetcore_cleanup()
      * }
      */
-    public static FunctionDescriptor p2pmsgcore_cleanup$descriptor() {
-        return p2pmsgcore_cleanup.DESC;
+    public static FunctionDescriptor targetcore_cleanup$descriptor() {
+        return targetcore_cleanup.DESC;
     }
 
     /**
      * Downcall method handle for:
      * {@snippet lang=c :
-     * void p2pmsgcore_cleanup()
+     * void targetcore_cleanup()
      * }
      */
-    public static MethodHandle p2pmsgcore_cleanup$handle() {
-        return p2pmsgcore_cleanup.HANDLE;
+    public static MethodHandle targetcore_cleanup$handle() {
+        return targetcore_cleanup.HANDLE;
     }
 
     /**
      * Address for:
      * {@snippet lang=c :
-     * void p2pmsgcore_cleanup()
+     * void targetcore_cleanup()
      * }
      */
-    public static MemorySegment p2pmsgcore_cleanup$address() {
-        return p2pmsgcore_cleanup.ADDR;
+    public static MemorySegment targetcore_cleanup$address() {
+        return targetcore_cleanup.ADDR;
     }
 
     /**
      * {@snippet lang=c :
-     * void p2pmsgcore_cleanup()
+     * void targetcore_cleanup()
      * }
      */
-    public static void p2pmsgcore_cleanup() {
-        var mh$ = p2pmsgcore_cleanup.HANDLE;
+    public static void targetcore_cleanup() {
+        var mh$ = targetcore_cleanup.HANDLE;
         try {
             if (TRACE_DOWNCALLS) {
-                traceDowncall("p2pmsgcore_cleanup");
+                traceDowncall("targetcore_cleanup");
             }
             mh$.invokeExact();
         } catch (Error | RuntimeException ex) {
@@ -2394,6 +2394,126 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
         }
     }
 
+    private static class p2peerconwsa_get_trust_class {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            P2Pmsgcore_c.C_INT,
+            P2Pmsgcore_c.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_get_trust_class");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerconwsa_get_trust_class(P2PeerConWsaHandle h)
+     * }
+     */
+    public static FunctionDescriptor p2peerconwsa_get_trust_class$descriptor() {
+        return p2peerconwsa_get_trust_class.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerconwsa_get_trust_class(P2PeerConWsaHandle h)
+     * }
+     */
+    public static MethodHandle p2peerconwsa_get_trust_class$handle() {
+        return p2peerconwsa_get_trust_class.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerconwsa_get_trust_class(P2PeerConWsaHandle h)
+     * }
+     */
+    public static MemorySegment p2peerconwsa_get_trust_class$address() {
+        return p2peerconwsa_get_trust_class.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerconwsa_get_trust_class(P2PeerConWsaHandle h)
+     * }
+     */
+    public static int p2peerconwsa_get_trust_class(MemorySegment h) {
+        var mh$ = p2peerconwsa_get_trust_class.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerconwsa_get_trust_class", h);
+            }
+            return (int)mh$.invokeExact(h);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerconwsa_demote_trust {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_INT
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_demote_trust");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * void p2peerconwsa_demote_trust(P2PeerConWsaHandle h, int trustClass)
+     * }
+     */
+    public static FunctionDescriptor p2peerconwsa_demote_trust$descriptor() {
+        return p2peerconwsa_demote_trust.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * void p2peerconwsa_demote_trust(P2PeerConWsaHandle h, int trustClass)
+     * }
+     */
+    public static MethodHandle p2peerconwsa_demote_trust$handle() {
+        return p2peerconwsa_demote_trust.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * void p2peerconwsa_demote_trust(P2PeerConWsaHandle h, int trustClass)
+     * }
+     */
+    public static MemorySegment p2peerconwsa_demote_trust$address() {
+        return p2peerconwsa_demote_trust.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * void p2peerconwsa_demote_trust(P2PeerConWsaHandle h, int trustClass)
+     * }
+     */
+    public static void p2peerconwsa_demote_trust(MemorySegment h, int trustClass) {
+        var mh$ = p2peerconwsa_demote_trust.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerconwsa_demote_trust", h, trustClass);
+            }
+            mh$.invokeExact(h, trustClass);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
     private static class p2peerconwsa_post_msg {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
             P2Pmsgcore_c.C_POINTER,
@@ -3297,6 +3417,248 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
         }
     }
 
+    private static class p2peerhub_set_link_policy {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_INT,
+            P2Pmsgcore_c.C_INT
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_set_link_policy");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * void p2peerhub_set_link_policy(P2PeerHubHandle h, int trustClass, int policy)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_set_link_policy$descriptor() {
+        return p2peerhub_set_link_policy.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * void p2peerhub_set_link_policy(P2PeerHubHandle h, int trustClass, int policy)
+     * }
+     */
+    public static MethodHandle p2peerhub_set_link_policy$handle() {
+        return p2peerhub_set_link_policy.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * void p2peerhub_set_link_policy(P2PeerHubHandle h, int trustClass, int policy)
+     * }
+     */
+    public static MemorySegment p2peerhub_set_link_policy$address() {
+        return p2peerhub_set_link_policy.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * void p2peerhub_set_link_policy(P2PeerHubHandle h, int trustClass, int policy)
+     * }
+     */
+    public static void p2peerhub_set_link_policy(MemorySegment h, int trustClass, int policy) {
+        var mh$ = p2peerhub_set_link_policy.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_set_link_policy", h, trustClass, policy);
+            }
+            mh$.invokeExact(h, trustClass, policy);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_get_link_policy {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            P2Pmsgcore_c.C_INT,
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_INT
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_get_link_policy");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerhub_get_link_policy(P2PeerHubHandle h, int trustClass)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_get_link_policy$descriptor() {
+        return p2peerhub_get_link_policy.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerhub_get_link_policy(P2PeerHubHandle h, int trustClass)
+     * }
+     */
+    public static MethodHandle p2peerhub_get_link_policy$handle() {
+        return p2peerhub_get_link_policy.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerhub_get_link_policy(P2PeerHubHandle h, int trustClass)
+     * }
+     */
+    public static MemorySegment p2peerhub_get_link_policy$address() {
+        return p2peerhub_get_link_policy.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerhub_get_link_policy(P2PeerHubHandle h, int trustClass)
+     * }
+     */
+    public static int p2peerhub_get_link_policy(MemorySegment h, int trustClass) {
+        var mh$ = p2peerhub_get_link_policy.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_get_link_policy", h, trustClass);
+            }
+            return (int)mh$.invokeExact(h, trustClass);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_require_trust_at_least {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_INT
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_require_trust_at_least");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * void p2peerhub_require_trust_at_least(P2PeerHubHandle h, int trustClass)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_require_trust_at_least$descriptor() {
+        return p2peerhub_require_trust_at_least.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * void p2peerhub_require_trust_at_least(P2PeerHubHandle h, int trustClass)
+     * }
+     */
+    public static MethodHandle p2peerhub_require_trust_at_least$handle() {
+        return p2peerhub_require_trust_at_least.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * void p2peerhub_require_trust_at_least(P2PeerHubHandle h, int trustClass)
+     * }
+     */
+    public static MemorySegment p2peerhub_require_trust_at_least$address() {
+        return p2peerhub_require_trust_at_least.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * void p2peerhub_require_trust_at_least(P2PeerHubHandle h, int trustClass)
+     * }
+     */
+    public static void p2peerhub_require_trust_at_least(MemorySegment h, int trustClass) {
+        var mh$ = p2peerhub_require_trust_at_least.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_require_trust_at_least", h, trustClass);
+            }
+            mh$.invokeExact(h, trustClass);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_get_required_trust {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            P2Pmsgcore_c.C_INT,
+            P2Pmsgcore_c.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_get_required_trust");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerhub_get_required_trust(P2PeerHubHandle h)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_get_required_trust$descriptor() {
+        return p2peerhub_get_required_trust.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerhub_get_required_trust(P2PeerHubHandle h)
+     * }
+     */
+    public static MethodHandle p2peerhub_get_required_trust$handle() {
+        return p2peerhub_get_required_trust.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerhub_get_required_trust(P2PeerHubHandle h)
+     * }
+     */
+    public static MemorySegment p2peerhub_get_required_trust$address() {
+        return p2peerhub_get_required_trust.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerhub_get_required_trust(P2PeerHubHandle h)
+     * }
+     */
+    public static int p2peerhub_get_required_trust(MemorySegment h) {
+        var mh$ = p2peerhub_get_required_trust.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_get_required_trust", h);
+            }
+            return (int)mh$.invokeExact(h);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
     private static class p2peerhub_set_identity {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
             P2Pmsgcore_c.C_INT,
@@ -4076,6 +4438,126 @@ public class P2Pmsgcore_c extends P2Pmsgcore_c$shared {
         try {
             if (TRACE_DOWNCALLS) {
                 traceDowncall("p2peerhub_is_seal_required", h);
+            }
+            return (int)mh$.invokeExact(h);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_waive_end_to_end_in_process {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.ofVoid(
+            P2Pmsgcore_c.C_POINTER,
+            P2Pmsgcore_c.C_INT
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_waive_end_to_end_in_process");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * void p2peerhub_waive_end_to_end_in_process(P2PeerHubHandle h, int waive)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_waive_end_to_end_in_process$descriptor() {
+        return p2peerhub_waive_end_to_end_in_process.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * void p2peerhub_waive_end_to_end_in_process(P2PeerHubHandle h, int waive)
+     * }
+     */
+    public static MethodHandle p2peerhub_waive_end_to_end_in_process$handle() {
+        return p2peerhub_waive_end_to_end_in_process.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * void p2peerhub_waive_end_to_end_in_process(P2PeerHubHandle h, int waive)
+     * }
+     */
+    public static MemorySegment p2peerhub_waive_end_to_end_in_process$address() {
+        return p2peerhub_waive_end_to_end_in_process.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * void p2peerhub_waive_end_to_end_in_process(P2PeerHubHandle h, int waive)
+     * }
+     */
+    public static void p2peerhub_waive_end_to_end_in_process(MemorySegment h, int waive) {
+        var mh$ = p2peerhub_waive_end_to_end_in_process.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_waive_end_to_end_in_process", h, waive);
+            }
+            mh$.invokeExact(h, waive);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerhub_is_end_to_end_waived_in_process {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            P2Pmsgcore_c.C_INT,
+            P2Pmsgcore_c.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerhub_is_end_to_end_waived_in_process");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerhub_is_end_to_end_waived_in_process(P2PeerHubHandle h)
+     * }
+     */
+    public static FunctionDescriptor p2peerhub_is_end_to_end_waived_in_process$descriptor() {
+        return p2peerhub_is_end_to_end_waived_in_process.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerhub_is_end_to_end_waived_in_process(P2PeerHubHandle h)
+     * }
+     */
+    public static MethodHandle p2peerhub_is_end_to_end_waived_in_process$handle() {
+        return p2peerhub_is_end_to_end_waived_in_process.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerhub_is_end_to_end_waived_in_process(P2PeerHubHandle h)
+     * }
+     */
+    public static MemorySegment p2peerhub_is_end_to_end_waived_in_process$address() {
+        return p2peerhub_is_end_to_end_waived_in_process.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerhub_is_end_to_end_waived_in_process(P2PeerHubHandle h)
+     * }
+     */
+    public static int p2peerhub_is_end_to_end_waived_in_process(MemorySegment h) {
+        var mh$ = p2peerhub_is_end_to_end_waived_in_process.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerhub_is_end_to_end_waived_in_process", h);
             }
             return (int)mh$.invokeExact(h);
         } catch (Error | RuntimeException ex) {
