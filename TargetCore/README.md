@@ -272,6 +272,14 @@ with the directory holding both DLLs **on `PATH`**.
 > `IllegalArgumentException: Cannot open library: TargetCore.dll` from a static
 > initialiser. `run_all.ps1` sets `PATH` for you.
 
+> **And `java` itself must be the run JDK**, not whatever `PATH` hands you. `mvn`
+> compiles at `release 23` using `JAVA_HOME`; a bare `java` is resolved from `PATH`,
+> and on a box with several JDKs installed those are routinely not the same one.
+> The result is `UnsupportedClassVersionError: class file version 67.0` against a
+> tree that is otherwise green -- a compile that worked handed to a runtime that is
+> too old. Spell it `"$env:JAVA_HOME\bin\java.exe"`, or use `.\run_all.ps1`, which
+> resolves the JVM once and checks its bundled C++ runtime while it is there.
+
 ---
 
 ## Lifecycle — call startup before any hub
