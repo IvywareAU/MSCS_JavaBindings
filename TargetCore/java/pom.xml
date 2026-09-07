@@ -21,8 +21,8 @@
                              https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.p2pmsgcore</groupId>
-  <artifactId>p2pmsgcore-java</artifactId>
+  <groupId>com.targetcore</groupId>
+  <artifactId>targetcore-java</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <description>Java Panama FFI bindings for the TargetCore native library</description>
@@ -46,10 +46,10 @@
     <!-- Directory holding TargetCore.dll (and the Msgcore.dll it imports).
          The native sources live in the TargetCore repository, not this one, so
          this points into a checkout of it; override per site:
-             mvn test -Dp2pmsgcore.lib.dir=D:\path\to\TargetCore\out\x64\Release
+             mvn test -Dtargetcore.lib.dir=D:\path\to\TargetCore\out\x64\Release
          It used to default to ../native/build, back when this tree carried its
          own copy of the C wrapper. That copy was deleted on 2026-08-14. -->
-    <p2pmsgcore.lib.dir>${project.basedir}/../../../MSCS/TargetCore/out/x64/Release</p2pmsgcore.lib.dir>
+    <targetcore.lib.dir>${project.basedir}/../../../MSCS/TargetCore/out/x64/Release</targetcore.lib.dir>
   </properties>
 
   <build>
@@ -84,7 +84,7 @@
           <argLine>--enable-native-access=ALL-UNNAMED</argLine>
           <systemPropertyVariables>
             <!-- Adjust to the directory that holds TargetCore.dll -->
-            <java.library.path>${p2pmsgcore.lib.dir}</java.library.path>
+            <java.library.path>${targetcore.lib.dir}</java.library.path>
           </systemPropertyVariables>
         </configuration>
       </plugin>
@@ -97,7 +97,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.p2pmsgcore.SmokeTest</mainClass>
+              <mainClass>com.targetcore.SmokeTest</mainClass>
             </manifest>
           </archive>
         </configuration>

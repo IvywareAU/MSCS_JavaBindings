@@ -13,7 +13,7 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 //
-package com.p2pmsgcore;
+package com.targetcore;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
@@ -67,11 +67,11 @@ public class SmokeTestSink {
 
     public static void main(String[] args) throws Exception {
 
-        P2Pmsgcore.startup(16);
+        TargetCore.startup(16);
         try {
             run();
         } finally {
-            P2Pmsgcore.cleanup();
+            TargetCore.cleanup();
         }
 
         if (arrived.getCount() != 0) {

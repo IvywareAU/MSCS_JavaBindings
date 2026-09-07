@@ -13,7 +13,7 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 //
-package com.p2pmsgcore;
+package com.targetcore;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -66,7 +66,7 @@ public class SmokeTestAuth {
 
         Path dir = Files.createTempDirectory("p2p-authsmoke-");
         try {
-            P2Pmsgcore.startup(16);
+            TargetCore.startup(16);
             try {
                 //  Each phase on its own thread, because the kernel allows one
                 //  hub per thread and closing the first does not release its
@@ -77,7 +77,7 @@ public class SmokeTestAuth {
                 onOwnThread("phase3", () -> phase3Provisioned(dir));
                 onOwnThread("phase4", SmokeTestAuth::phase4SpawnIsGatedToo);
             } finally {
-                P2Pmsgcore.cleanup();
+                TargetCore.cleanup();
             }
         } finally {
             deleteTree(dir);

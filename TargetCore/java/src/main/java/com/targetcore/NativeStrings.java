@@ -13,7 +13,7 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 //
-package com.p2pmsgcore;
+package com.targetcore;
 
 import java.lang.foreign.*;
 import java.nio.ByteOrder;
@@ -58,7 +58,7 @@ final class NativeStrings {
     // ── UTF-8 (portable) variants for the _u8 C API ─────────────────────────────
     // The _u8 entry points take/return UTF-8 char*, so a Java String round-trips
     // regardless of the native wchar_t width (UTF-16 on Windows, UTF-32 on Linux).
-    // Prefer these when loading the Linux libp2pmsgcore.so, or for any code that
+    // Prefer these when loading the Linux libtargetcore.so, or for any code that
     // wants encoding-portable behaviour.
 
     // Allocates a null-terminated UTF-8 string in the given arena.

@@ -13,10 +13,10 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 //
-package com.p2pmsgcore;
+package com.targetcore;
 
-import com.p2pmsgcore.native_.P2Pmsgcore_c;
-import com.p2pmsgcore.native_.P2PeerHubSinkFnU8;
+import com.targetcore.native_.TargetCore_c;
+import com.targetcore.native_.P2PeerHubSinkFnU8;
 import java.lang.foreign.*;
 
 /**
@@ -56,7 +56,7 @@ public final class P2PeerHub implements AutoCloseable {
      */
     public P2PeerHub(String hubAddr) {
         try (Arena tmp = Arena.ofConfined()) {
-            this.handle = P2Pmsgcore_c.p2peerhub_create(NativeStrings.toWStr(hubAddr, tmp));
+            this.handle = TargetCore_c.p2peerhub_create(NativeStrings.toWStr(hubAddr, tmp));
         }
         if (handle == null || handle.equals(MemorySegment.NULL))
             throw new RuntimeException("p2peerhub_create returned null");
@@ -96,7 +96,7 @@ public final class P2PeerHub implements AutoCloseable {
     public boolean createHub(String hubAddr, int pumpsMax) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            return P2Pmsgcore_c.p2peerhub_create_hub(
+            return TargetCore_c.p2peerhub_create_hub(
                     handle, NativeStrings.toWStr(hubAddr, tmp), pumpsMax) != 0;
         }
     }
@@ -119,26 +119,26 @@ public final class P2PeerHub implements AutoCloseable {
      */
     public long spawnHub() {
         checkOpen();
-        MemorySegment threadHandle = P2Pmsgcore_c.p2peerhub_spawn_hub(handle);
+        MemorySegment threadHandle = TargetCore_c.p2peerhub_spawn_hub(handle);
         return threadHandle == null ? 0L : threadHandle.address();
     }
 
     /** Signals all pumps to stop and waits for shutdown. */
     public void closeHub() {
         checkOpen();
-        P2Pmsgcore_c.p2peerhub_close_hub(handle);
+        TargetCore_c.p2peerhub_close_hub(handle);
     }
 
     /** Pauses the hub's processing loop. */
     public void pauseHub() {
         checkOpen();
-        P2Pmsgcore_c.p2peerhub_pause_hub(handle);
+        TargetCore_c.p2peerhub_pause_hub(handle);
     }
 
     /** Resumes a paused hub. */
     public void wakeupHub() {
         checkOpen();
-        P2Pmsgcore_c.p2peerhub_wakeup_hub(handle);
+        TargetCore_c.p2peerhub_wakeup_hub(handle);
     }
 
     // ── Connection management ─────────────────────────────────────────────────
@@ -151,7 +151,7 @@ public final class P2PeerHub implements AutoCloseable {
      */
     public boolean postConnection(P2PeerConWsa con, int pumpID) {
         checkOpen();
-        boolean ok = P2Pmsgcore_c.p2peerhub_post_con(handle, con.rawHandle(), pumpID) != 0;
+        boolean ok = TargetCore_c.p2peerhub_post_con(handle, con.rawHandle(), pumpID) != 0;
         con.detach();
         return ok;
     }
@@ -163,7 +163,7 @@ public final class P2PeerHub implements AutoCloseable {
     public boolean connectionExists(String peerAddr) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            return P2Pmsgcore_c.p2peerhub_con_exists(handle, NativeStrings.toWStr(peerAddr, tmp)) != 0;
+            return TargetCore_c.p2peerhub_con_exists(handle, NativeStrings.toWStr(peerAddr, tmp)) != 0;
         }
     }
 
@@ -178,7 +178,7 @@ public final class P2PeerHub implements AutoCloseable {
      */
     public P2PMsg postMessage(P2PMsg msg) {
         checkOpen();
-        MemorySegment result = P2Pmsgcore_c.p2peerhub_post_msg(handle, msg.rawHandle());
+        MemorySegment result = TargetCore_c.p2peerhub_post_msg(handle, msg.rawHandle());
         msg.detach();
         return result != null && !result.equals(MemorySegment.NULL) ? new P2PMsg(result) : null;
     }
@@ -198,13 +198,13 @@ public final class P2PeerHub implements AutoCloseable {
      */
     public void requireAuth(boolean require) {
         checkOpen();
-        P2Pmsgcore_c.p2peerhub_require_auth(handle, require ? 1 : 0);
+        TargetCore_c.p2peerhub_require_auth(handle, require ? 1 : 0);
     }
 
     /** Does this hub require its peers to prove who they are? True unless turned off. */
     public boolean isAuthRequired() {
         checkOpen();
-        return P2Pmsgcore_c.p2peerhub_is_auth_required(handle) != 0;
+        return TargetCore_c.p2peerhub_is_auth_required(handle) != 0;
     }
 
     /**
@@ -214,7 +214,7 @@ public final class P2PeerHub implements AutoCloseable {
     public IdResult setIdentity(String path, boolean createIfAbsent) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            return IdResult.fromCode(P2Pmsgcore_c.p2peerhub_set_identity(
+            return IdResult.fromCode(TargetCore_c.p2peerhub_set_identity(
                     handle, NativeStrings.toU8(path, tmp), createIfAbsent ? 1 : 0));
         }
     }
@@ -224,20 +224,20 @@ public final class P2PeerHub implements AutoCloseable {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
             return IdResult.fromCode(
-                    P2Pmsgcore_c.p2peerhub_set_allow_list(handle, NativeStrings.toU8(path, tmp)));
+                    TargetCore_c.p2peerhub_set_allow_list(handle, NativeStrings.toU8(path, tmp)));
         }
     }
 
     /** Re-reads the configured allow-list on a running hub. */
     public IdResult reloadAllowList() {
         checkOpen();
-        return IdResult.fromCode(P2Pmsgcore_c.p2peerhub_reload_allow_list(handle));
+        return IdResult.fromCode(TargetCore_c.p2peerhub_reload_allow_list(handle));
     }
 
     /** The allow-list path this hub was given, or {@code null} if it was never given one. */
     public String allowListPath() {
         checkOpen();
-        return NativeStrings.fromU8(P2Pmsgcore_c.p2peerhub_auth_allow_list_path(handle));
+        return NativeStrings.fromU8(TargetCore_c.p2peerhub_auth_allow_list_path(handle));
     }
 
     // ---- Revocation ------------------------------------------------------
@@ -257,14 +257,14 @@ public final class P2PeerHub implements AutoCloseable {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
             return IdResult.fromCode(
-                    P2Pmsgcore_c.p2peerhub_set_revocation_list(handle, NativeStrings.toU8(path, tmp)));
+                    TargetCore_c.p2peerhub_set_revocation_list(handle, NativeStrings.toU8(path, tmp)));
         }
     }
 
     /** The revocation list path this hub was given, or {@code null}. */
     public String revocationListPath() {
         checkOpen();
-        return NativeStrings.fromU8(P2Pmsgcore_c.p2peerhub_auth_revocation_list_path(handle));
+        return NativeStrings.fromU8(TargetCore_c.p2peerhub_auth_revocation_list_path(handle));
     }
 
     /**
@@ -282,13 +282,13 @@ public final class P2PeerHub implements AutoCloseable {
      */
     public void requireRevocation(boolean require) {
         checkOpen();
-        P2Pmsgcore_c.p2peerhub_require_revocation(handle, require ? 1 : 0);
+        TargetCore_c.p2peerhub_require_revocation(handle, require ? 1 : 0);
     }
 
     /** Does this hub demand a revocation position before arming? True unless turned off. */
     public boolean isRevocationRequired() {
         checkOpen();
-        return P2Pmsgcore_c.p2peerhub_is_revocation_required(handle) != 0;
+        return TargetCore_c.p2peerhub_is_revocation_required(handle) != 0;
     }
 
     // ---- End-to-end sealing ----------------------------------------------
@@ -307,7 +307,7 @@ public final class P2PeerHub implements AutoCloseable {
     public IdResult setAgreementKey(String path, boolean createIfAbsent) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            return IdResult.fromCode(P2Pmsgcore_c.p2peerhub_set_agreement_key(
+            return IdResult.fromCode(TargetCore_c.p2peerhub_set_agreement_key(
                     handle, NativeStrings.toU8(path, tmp), createIfAbsent ? 1 : 0));
         }
     }
@@ -330,13 +330,13 @@ public final class P2PeerHub implements AutoCloseable {
      */
     public void requireSeal(boolean require) {
         checkOpen();
-        P2Pmsgcore_c.p2peerhub_require_seal(handle, require ? 1 : 0);
+        TargetCore_c.p2peerhub_require_seal(handle, require ? 1 : 0);
     }
 
     /** Does this hub seal relayed bodies, refusing to send what it cannot seal? */
     public boolean isSealRequired() {
         checkOpen();
-        return P2Pmsgcore_c.p2peerhub_is_seal_required(handle) != 0;
+        return TargetCore_c.p2peerhub_is_seal_required(handle) != 0;
     }
 
     /**
@@ -359,14 +359,14 @@ public final class P2PeerHub implements AutoCloseable {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
             return IdResult.fromCode(
-                    P2Pmsgcore_c.p2peerhub_add_seal_reader_u8(handle, NativeStrings.toU8(addr, tmp)));
+                    TargetCore_c.p2peerhub_add_seal_reader_u8(handle, NativeStrings.toU8(addr, tmp)));
         }
     }
 
     /** Forgets every extra reader named by {@link #addSealReader}. */
     public void clearSealReaders() {
         checkOpen();
-        P2Pmsgcore_c.p2peerhub_clear_seal_readers(handle);
+        TargetCore_c.p2peerhub_clear_seal_readers(handle);
     }
 
     /** What {@link #provisionAuth} found or did. */
@@ -392,7 +392,7 @@ public final class P2PeerHub implements AutoCloseable {
             //  against a terminator written at the boundary.
             MemorySegment fp      = tmp.allocate(41);
             MemorySegment created = tmp.allocate(ValueLayout.JAVA_INT);
-            int rc = P2Pmsgcore_c.p2peerhub_provision_auth(
+            int rc = TargetCore_c.p2peerhub_provision_auth(
                     handle, NativeStrings.toU8(path, tmp), fp, 40, created);
             return new Provisioned(IdResult.fromCode(rc),
                                    NativeStrings.fromU8(fp),
@@ -406,7 +406,7 @@ public final class P2PeerHub implements AutoCloseable {
      */
     public ArmResult authArm() {
         checkOpen();
-        return ArmResult.fromCode(P2Pmsgcore_c.p2peerhub_auth_arm(handle));
+        return ArmResult.fromCode(TargetCore_c.p2peerhub_auth_arm(handle));
     }
 
     // -- Receive sink ----------------------------------------------------------
@@ -473,7 +473,7 @@ public final class P2PeerHub implements AutoCloseable {
                     }
                 }, arena);
 
-            boolean ok = P2Pmsgcore_c.p2peerhub_set_sink_u8(handle, stub, MemorySegment.NULL) != 0;
+            boolean ok = TargetCore_c.p2peerhub_set_sink_u8(handle, stub, MemorySegment.NULL) != 0;
             if (!ok) { arena.close(); return false; }
             this.sinkArena = arena;
             this.sinkStub  = stub;
@@ -492,7 +492,7 @@ public final class P2PeerHub implements AutoCloseable {
     public boolean clearSink() {
         checkOpen();
         if (sinkStub == null) return true;
-        boolean ok = P2Pmsgcore_c.p2peerhub_set_sink_u8(
+        boolean ok = TargetCore_c.p2peerhub_set_sink_u8(
                 handle, MemorySegment.NULL, MemorySegment.NULL) != 0;
         sinkArena.close();
         sinkArena = null;
@@ -508,7 +508,7 @@ public final class P2PeerHub implements AutoCloseable {
     /** Creates a hub from a UTF-8 address, via the {@code _u8} C API. */
     public static P2PeerHub ofUtf8(String hubAddr) {
         try (Arena tmp = Arena.ofConfined()) {
-            return new P2PeerHub(P2Pmsgcore_c.p2peerhub_create_u8(NativeStrings.toU8(hubAddr, tmp)));
+            return new P2PeerHub(TargetCore_c.p2peerhub_create_u8(NativeStrings.toU8(hubAddr, tmp)));
         }
     }
 
@@ -516,7 +516,7 @@ public final class P2PeerHub implements AutoCloseable {
     public boolean createHubUtf8(String hubAddr, int pumpsMax) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            return P2Pmsgcore_c.p2peerhub_create_hub_u8(
+            return TargetCore_c.p2peerhub_create_hub_u8(
                     handle, NativeStrings.toU8(hubAddr, tmp), pumpsMax) != 0;
         }
     }
@@ -525,14 +525,14 @@ public final class P2PeerHub implements AutoCloseable {
     public boolean connectionExistsUtf8(String peerAddr) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            return P2Pmsgcore_c.p2peerhub_con_exists_u8(handle, NativeStrings.toU8(peerAddr, tmp)) != 0;
+            return TargetCore_c.p2peerhub_con_exists_u8(handle, NativeStrings.toU8(peerAddr, tmp)) != 0;
         }
     }
 
     /** This hub's address, decoded from UTF-8. */
     public String addressUtf8() {
         checkOpen();
-        return NativeStrings.fromU8(P2Pmsgcore_c.p2peerhub_get_address_u8(handle));
+        return NativeStrings.fromU8(TargetCore_c.p2peerhub_get_address_u8(handle));
     }
 
     // ── Properties ────────────────────────────────────────────────────────────
@@ -540,13 +540,13 @@ public final class P2PeerHub implements AutoCloseable {
     /** Returns the numeric hub ID assigned by the framework. */
     public long hubId() {
         checkOpen();
-        return Integer.toUnsignedLong(P2Pmsgcore_c.p2peerhub_get_hub_id(handle));
+        return Integer.toUnsignedLong(TargetCore_c.p2peerhub_get_hub_id(handle));
     }
 
     /** Returns the P2P address string of this hub. */
     public String address() {
         checkOpen();
-        return NativeStrings.fromWStr(P2Pmsgcore_c.p2peerhub_get_address(handle));
+        return NativeStrings.fromWStr(TargetCore_c.p2peerhub_get_address(handle));
     }
 
     @Override
@@ -560,7 +560,7 @@ public final class P2PeerHub implements AutoCloseable {
             //  Tell the library to stop calling the stub BEFORE the arena that
             //  holds it goes away, and before the hub itself is destroyed.
             if (sinkStub != null) clearSink();
-            P2Pmsgcore_c.p2peerhub_destroy(handle);
+            TargetCore_c.p2peerhub_destroy(handle);
             closed = true;
         }
     }

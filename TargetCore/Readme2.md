@@ -18,10 +18,10 @@ described. See `README.md` Step 1.
 ### Java layer (Panama bindings — Step 5 & 6)
 | File | Purpose |
 |------|---------|
-| `native_/P2Pmsgcore_c.java` | Low-level jextract output — one `MethodHandle` + typed static method per C function, all 83 |
+| `native_/TargetCore_c.java` | Low-level jextract output — one `MethodHandle` + typed static method per C function, all 83 |
 | `native_/P2PeerHubSinkFn[U8].java` | jextract upcall-stub factories for the receive-sink typedefs |
 | `NativeStrings.java` | `wchar_t*` and UTF-8 `char*` ↔ `String` conversion |
-| `P2Pmsgcore.java` | Process lifecycle: `startup` / `cleanup` |
+| `TargetCore.java` | Process lifecycle: `startup` / `cleanup` |
 | `P2PAddr.java` | Clean `AutoCloseable` wrapper for `P2Paddr` |
 | `P2PMsg.java` | Clean wrapper for `P2PeerMsg` with `detach()` for framework ownership handoff |
 | `P2PeerConWsa.java` | TCP connection wrapper with `clientFactory`/`serviceFactory` static constructors |

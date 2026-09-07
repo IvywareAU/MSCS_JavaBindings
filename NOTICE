@@ -14,7 +14,7 @@ Machine-generated files
 
 Everything under
 
-    TargetCore/java/src/main/java/com/p2pmsgcore/native_/
+    TargetCore/java/src/main/java/com/targetcore/native_/
     Msgcore/java/src/main/java/com/msgcore/native_/
 
 is jextract output, generated from this project's own C headers -- for

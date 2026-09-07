@@ -13,7 +13,7 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 //
-package com.p2pmsgcore;
+package com.targetcore;
 
 import java.nio.charset.StandardCharsets;
 
@@ -29,9 +29,9 @@ import java.nio.charset.StandardCharsets;
  *
  * <p>Run:
  * <pre>
- *   java --enable-native-access=ALL-UNNAMED -cp target\classes com.p2pmsgcore.SmokeTest
+ *   java --enable-native-access=ALL-UNNAMED -cp target\classes com.targetcore.SmokeTest
  * </pre>
- * with the directory holding {@code P2Pmsgcore.dll} and {@code Msgcore.dll} on
+ * with the directory holding {@code TargetCore.dll} and {@code Msgcore.dll} on
  * {@code PATH} — see the README on why {@code -Djava.library.path} is not enough
  * any more.
  *
@@ -72,7 +72,7 @@ public class SmokeTest {
         }
 
         // -- the hub needs the environment --------------------------------------
-        P2Pmsgcore.startup(16);
+        TargetCore.startup(16);
         try {
             try (P2PeerHub hub = new P2PeerHub("SmokeHub")) {
 
@@ -101,7 +101,7 @@ public class SmokeTest {
                 hub.closeHub();
             }
         } finally {
-            P2Pmsgcore.cleanup();
+            TargetCore.cleanup();
         }
 
         System.out.println(fails == 0 ? "\nSmokeTest passed." : "\nSmokeTest FAILED (" + fails + ")");

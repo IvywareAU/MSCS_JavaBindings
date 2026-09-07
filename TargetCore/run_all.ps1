@@ -143,12 +143,12 @@ if (-not $manifest) { $manifest = '' }
 Write-Host "manifest : $manifest"
 
 $tests = @(
-    'com.p2pmsgcore.AbiCoverage',
-    'com.p2pmsgcore.SmokeTest',
-    'com.p2pmsgcore.SmokeTestU8',
-    'com.p2pmsgcore.SmokeTestGuard',
-    'com.p2pmsgcore.SmokeTestAuth',
-    'com.p2pmsgcore.SmokeTestSink'
+    'com.targetcore.AbiCoverage',
+    'com.targetcore.SmokeTest',
+    'com.targetcore.SmokeTestU8',
+    'com.targetcore.SmokeTestGuard',
+    'com.targetcore.SmokeTestAuth',
+    'com.targetcore.SmokeTestSink'
 )
 
 $logs = Join-Path $root 'logs'
@@ -164,7 +164,7 @@ try {
         Write-Host "=== $short"
         $out = Join-Path $logs "$short.txt"
         & $javaExe --enable-native-access=ALL-UNNAMED `
-                   "-Dp2pmsgcore.manifest=$manifest" `
+                   "-Dtargetcore.manifest=$manifest" `
                    -cp (Join-Path $javaProj 'target\classes') $t 2>&1 |
             Tee-Object -FilePath $out
         $results += [pscustomobject]@{ Test = $short; Exit = $LASTEXITCODE }

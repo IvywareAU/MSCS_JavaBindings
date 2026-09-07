@@ -13,9 +13,9 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 //
-package com.p2pmsgcore;
+package com.targetcore;
 
-import com.p2pmsgcore.native_.P2Pmsgcore_c;
+import com.targetcore.native_.TargetCore_c;
 
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -32,13 +32,13 @@ import java.util.*;
  * printed "passed", and a Java caller simply could not start a hub.
  *
  * <p>The comparison is against {@code .github/ci/abi-flat.manifest} in a
- * P2Pmsgcore checkout, which VERSIONING.md §2 names as <i>the</i> enumeration of
+ * TargetCore checkout, which VERSIONING.md §2 names as <i>the</i> enumeration of
  * the covered surface. It is deliberately read from over there rather than copied
  * to here: an ABI definition duplicated across two repositories drifts, and this
  * one already had.
  *
  * <p>Point it somewhere else with
- * {@code -Dp2pmsgcore.manifest=<path to abi-flat.manifest>}.
+ * {@code -Dtargetcore.manifest=<path to abi-flat.manifest>}.
  *
  * <p>Verdict = exit code: 0 PASS, 1 FAIL (the bindings are behind, or ahead),
  * 2 SETUP (no manifest to compare against — not a pass).
@@ -46,7 +46,7 @@ import java.util.*;
 public class AbiCoverage {
 
     private static final String DEFAULT_MANIFEST =
-            "../../../MSCS/P2Pmsgcore/.github/ci/abi-flat.manifest";
+            "../../../MSCS/TargetCore/.github/ci/abi-flat.manifest";
 
     /**
      * The one entry point deliberately left unbound at the wrapper layer. The
@@ -57,10 +57,10 @@ public class AbiCoverage {
 
     public static void main(String[] args) throws Exception {
 
-        Path manifest = Path.of(System.getProperty("p2pmsgcore.manifest", DEFAULT_MANIFEST));
+        Path manifest = Path.of(System.getProperty("targetcore.manifest", DEFAULT_MANIFEST));
         if (!Files.isReadable(manifest)) {
             System.out.println("SETUP: no manifest at " + manifest.toAbsolutePath());
-            System.out.println("       pass -Dp2pmsgcore.manifest=<path to abi-flat.manifest>");
+            System.out.println("       pass -Dtargetcore.manifest=<path to abi-flat.manifest>");
             System.exit(2);
         }
 
@@ -72,7 +72,7 @@ public class AbiCoverage {
         }
 
         SortedSet<String> bound = new TreeSet<>();
-        for (Method m : P2Pmsgcore_c.class.getDeclaredMethods()) {
+        for (Method m : TargetCore_c.class.getDeclaredMethods()) {
             String n = m.getName();
             //  jextract emits name(), name$descriptor(), name$handle(), name$address().
             if (n.indexOf('$') >= 0) continue;

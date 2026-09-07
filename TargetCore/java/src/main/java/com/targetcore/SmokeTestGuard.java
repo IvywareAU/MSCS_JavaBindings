@@ -13,23 +13,23 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 //
-package com.p2pmsgcore;
+package com.targetcore;
 
 /**
- * Guard test: calling createHub WITHOUT p2pmsgcore_startup must fail cleanly
+ * Guard test: calling createHub WITHOUT targetcore_startup must fail cleanly
  * (return false), NOT hard-crash. Before the CreateP2PmsgHub guard + the
  * p2peerhub_create_hub try/catch, this scenario crashed in ntdll on an
  * uninitialised critical section. Deliberately does NOT call startup.
  *
  *   java --enable-native-access=ALL-UNNAMED
- *        -Djava.library.path=path\to\P2Pmsgcore.dll
+ *        -Djava.library.path=path\to\TargetCore.dll
  *        -cp target\classes
- *        com.p2pmsgcore.SmokeTestGuard
+ *        com.targetcore.SmokeTestGuard
  */
 public class SmokeTestGuard {
 
     public static void main(String[] args) {
-        // NO p2pmsgcore_startup() on purpose.
+        // NO targetcore_startup() on purpose.
         try (P2PeerHub hub = new P2PeerHub("GuardHub")) {
             boolean created = hub.createHub("GuardHub", 1);   // must NOT crash
             if (created) {

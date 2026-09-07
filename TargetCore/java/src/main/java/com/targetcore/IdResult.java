@@ -13,7 +13,7 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 //
-package com.p2pmsgcore;
+package com.targetcore;
 
 /**
  * {@code p2pcng::IdResult} — what the identity store says about loading, creating

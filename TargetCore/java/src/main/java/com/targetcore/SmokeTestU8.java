@@ -13,7 +13,7 @@
 // implied. See the License for the specific language governing
 // permissions and limitations under the License.
 //
-package com.p2pmsgcore;
+package com.targetcore;
 
 /**
  * UTF-8 (_u8) smoke test — the Java counterpart of the native p2p_u8_smoke ctest.
@@ -24,9 +24,9 @@ package com.p2pmsgcore;
  *
  * Run after the native DLL/so is on java.library.path:
  *   java --enable-native-access=ALL-UNNAMED
- *        -Djava.library.path=path\to\P2Pmsgcore.dll
+ *        -Djava.library.path=path\to\TargetCore.dll
  *        -cp target\classes
- *        com.p2pmsgcore.SmokeTestU8
+ *        com.targetcore.SmokeTestU8
  */
 public class SmokeTestU8 {
 
