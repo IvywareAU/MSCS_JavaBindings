@@ -1,17 +1,17 @@
-## What was produced in `C:\_Dev\_ClaudeCode\MSCS_JavaBindings\P2Pmsgcore\`
+## What was produced in `C:\_Dev\_ClaudeCode\MSCS_JavaBindings\TargetCore\`
 
 ### Native layer (C wrapper — Step 2 & 3)
 
-**Lives in the P2Pmsgcore repository, not here.** This tree carried a copy under
+**Lives in the TargetCore repository, not here.** This tree carried a copy under
 `native/` until 2026-08-14; it was deleted because two copies of an ABI definition
 drift apart, and this one already had — it sat several fixes behind the library it
 described. See `README.md` Step 1.
 
-| File (in the P2Pmsgcore checkout) | Purpose |
+| File (in the TargetCore checkout) | Purpose |
 |------|---------|
-| `P2Pmsgcore_c.h` | `extern "C"` header with opaque handles and flat C functions for all four classes — **83** entry points, 21 of them `_u8` twins (74/21 until the authentication block and the receive sink landed; regenerated 2026-08-20). **jextract reads this file** |
-| `P2Pmsgcore_c.cpp` | Implementation — resolves handles through a registry of live handles rather than casting the caller's pointer, and catches `P2Pevent` at every entry point so nothing unwinds across the `extern "C"` boundary |
-| `P2Pmsgcore_c_u8.cpp` | The UTF-8 `_u8` twins |
+| `TargetCore_c.h` | `extern "C"` header with opaque handles and flat C functions for all four classes — **83** entry points, 21 of them `_u8` twins (74/21 until the authentication block and the receive sink landed; regenerated 2026-08-20). **jextract reads this file** |
+| `TargetCore_c.cpp` | Implementation — resolves handles through a registry of live handles rather than casting the caller's pointer, and catches `P2Pevent` at every entry point so nothing unwinds across the `extern "C"` boundary |
+| `TargetCore_c_u8.cpp` | The UTF-8 `_u8` twins |
 
 **Classes wrapped:** `P2Paddr`, `P2PeerMsg`, `P2PeerConWsa`, `P2PeerHub`
 
@@ -33,7 +33,7 @@ described. See `README.md` Step 1.
 | `pom.xml` | Maven build — Java 22+, `--enable-native-access=ALL-UNNAMED` wired in |
 
 ### To activate
-1. Build `P2Pmsgcore.dll` from the P2Pmsgcore checkout — the wrapper is already one
+1. Build `TargetCore.dll` from the TargetCore checkout — the wrapper is already one
    of its sources, so there is nothing to add to the project
 2. Run `jextract` as shown in `README.md`, against the header in that checkout
    (replaces the hand-written stub with the real one)

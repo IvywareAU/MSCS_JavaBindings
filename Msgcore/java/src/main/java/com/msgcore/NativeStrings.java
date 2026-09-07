@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
  * the bindings therefore deleted them and broke the build — which is a large part of
  * why the bindings were never regenerated, and why they sat at 108 of the library's
  * 282 entry points until 2026-08-20. Hand-written code does not go in generated
- * files; it goes here, where a regeneration cannot reach it. The P2Pmsgcore tree has
+ * files; it goes here, where a regeneration cannot reach it. The TargetCore tree has
  * always had it this way round.
  */
 final class NativeStrings {

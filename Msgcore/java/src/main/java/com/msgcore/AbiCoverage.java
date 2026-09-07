@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  * compared the two numbers.
  *
  * <p><b>The comparison is against the header</b>, {@code Msgcore_c.h} in a Msgcore
- * checkout — the same file jextract reads. P2Pmsgcore's equivalent check compares
+ * checkout — the same file jextract reads. TargetCore's equivalent check compares
  * against {@code .github/ci/abi-flat.manifest}, an explicit enumeration of the
  * covered surface that VERSIONING.md makes a promise about; <b>Msgcore has no such
  * manifest</b>, so the header is the best available authority. That is a real

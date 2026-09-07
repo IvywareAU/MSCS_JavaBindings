@@ -25,7 +25,7 @@
   <artifactId>p2pmsgcore-java</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <description>Java Panama FFI bindings for the P2Pmsgcore native library</description>
+  <description>Java Panama FFI bindings for the TargetCore native library</description>
 
   <properties>
     <!-- 23, RAISED FROM 22 ON 2026-08-21, and it is a supported-JDK change
@@ -43,13 +43,13 @@
     <maven.compiler.release>23</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Directory holding P2Pmsgcore.dll (and the Msgcore.dll it imports).
-         The native sources live in the P2Pmsgcore repository, not this one, so
+    <!-- Directory holding TargetCore.dll (and the Msgcore.dll it imports).
+         The native sources live in the TargetCore repository, not this one, so
          this points into a checkout of it; override per site:
-             mvn test -Dp2pmsgcore.lib.dir=D:\path\to\P2Pmsgcore\out\x64\Release
+             mvn test -Dp2pmsgcore.lib.dir=D:\path\to\TargetCore\out\x64\Release
          It used to default to ../native/build, back when this tree carried its
          own copy of the C wrapper. That copy was deleted on 2026-08-14. -->
-    <p2pmsgcore.lib.dir>${project.basedir}/../../../MSCS/P2Pmsgcore/out/x64/Release</p2pmsgcore.lib.dir>
+    <p2pmsgcore.lib.dir>${project.basedir}/../../../MSCS/TargetCore/out/x64/Release</p2pmsgcore.lib.dir>
   </properties>
 
   <build>
@@ -83,7 +83,7 @@
         <configuration>
           <argLine>--enable-native-access=ALL-UNNAMED</argLine>
           <systemPropertyVariables>
-            <!-- Adjust to the directory that holds P2Pmsgcore.dll -->
+            <!-- Adjust to the directory that holds TargetCore.dll -->
             <java.library.path>${p2pmsgcore.lib.dir}</java.library.path>
           </systemPropertyVariables>
         </configuration>

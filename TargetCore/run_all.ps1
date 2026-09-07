@@ -86,8 +86,9 @@ if (Test-Path $crt) {
 # ---------------------------------------------------------------------------
 if (-not $LibDir) {
     $candidates = @(
-        "$root\..\..\MSCS\build-win-cmake\P2Pmsgcore\$Config",
-        "$root\..\..\MSCS\P2Pmsgcore\out\x64\$Config"
+        "$root\..\..\MSCS\build\windows-msvc\TargetCore\$Config",
+        "$root\..\..\MSCS\build-win-cmake\TargetCore\$Config",
+        "$root\..\..\MSCS\TargetCore\out\x64\$Config"
     )
     foreach ($c in $candidates) {
         if (Test-Path (Join-Path $c 'targetcore.dll')) { $LibDir = $c; break }
@@ -135,7 +136,7 @@ if (-not $SkipBuild) {
 # ---------------------------------------------------------------------------
 # 4. Run.
 # ---------------------------------------------------------------------------
-# AbiCoverage reads the covered-surface manifest out of the P2Pmsgcore checkout
+# AbiCoverage reads the covered-surface manifest out of the TargetCore checkout
 # rather than a copy kept here, because a copy is exactly what drifted last time.
 $manifest = (Resolve-Path "$root\..\..\MSCS\TargetCore\.github\ci\abi-flat.manifest" -ErrorAction SilentlyContinue)
 if (-not $manifest) { $manifest = '' }

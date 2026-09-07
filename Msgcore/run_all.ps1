@@ -112,7 +112,7 @@ if (-not $SkipBuild) {
 # 4. Run.
 #
 # AbiCoverage reads Msgcore_c.h out of the Msgcore checkout. Msgcore has no
-# .github/ci/abi-flat.manifest of the kind P2Pmsgcore's equivalent check uses, so
+# .github/ci/abi-flat.manifest of the kind TargetCore's equivalent check uses, so
 # the header is the best available authority -- see the AbiCoverage javadoc for
 # why that is a weaker thing than a manifest.
 # ---------------------------------------------------------------------------

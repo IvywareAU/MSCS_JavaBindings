@@ -1,6 +1,6 @@
-# P2Pmsgcore – Java Panama FFI Bindings
+# TargetCore – Java Panama FFI Bindings
 
-Exposes P2Pmsgcore's flat `extern "C"` surface to Java through the Panama Foreign
+Exposes TargetCore's flat `extern "C"` surface to Java through the Panama Foreign
 Function Interface (Java 23+), with hand-written wrappers over the generated layer.
 
 | C++ class      | Java wrapper          | Purpose                            |
@@ -49,7 +49,7 @@ hub *at all* — and could not turn the requirement off either, because
 `require_auth` was one of the missing eleven.
 
 `AbiCoverage` now exists so that this fails loudly instead of quietly. It reads
-`abi-flat.manifest` out of the P2Pmsgcore checkout — the file VERSIONING.md §2
+`abi-flat.manifest` out of the TargetCore checkout — the file VERSIONING.md §2
 names as *the* enumeration of the covered surface — and refuses to pass if any
 promised name has no generated binding. It is deliberately not a copy of that list
 kept here: a copy is precisely what drifted last time.
@@ -66,7 +66,7 @@ any kind. `hs_err_pid*.log` blames `msvcp140.dll+0x12f58`.
 `jvm.dll` imports them, so they are loaded before any of your code runs. Windows
 resolves a DLL's imports against whatever module of that base name is *already*
 loaded — so `TargetCore.dll` gets the JDK's copy, not the system's, and no `PATH`,
-`java.library.path` or load order can change that. P2Pmsgcore is built with MSVC
+`java.library.path` or load order can change that. TargetCore is built with MSVC
 14.4x and uses `std::mutex`, whose constructor became `constexpr` in toolset
 **14.40** (VS 2022 17.10); against an older runtime it dereferences null.
 
@@ -83,7 +83,7 @@ the only variable:
 **What to do:** run on a JDK 23+ whose `bin\msvcp140.dll` is **14.40 or newer**.
 `run_all.ps1` checks this before it runs anything and stops with an explanation
 rather than letting the JVM crash. If your JDK is older, the supported answers are
-to use a different JDK, or to build P2Pmsgcore with an older toolset — replacing
+to use a different JDK, or to build TargetCore with an older toolset — replacing
 files inside a JDK is neither.
 
 **The two requirements pinch, and on 2026-08-21 no ordinary JDK on the test
@@ -161,11 +161,11 @@ compiled into `TargetCore.dll` and `libtargetcore.so` by an ordinary build.
 
 In the project's **Preprocessor Definitions** make sure `TargetCore_EXPORTS` is
 defined (it already is for the DLL target; the static `DebugLib`/`ReleaseLib`
-configurations define `P2Pmsgcore_STATIC` instead, which expands `P2PC_API` to
+configurations define `TargetCore_STATIC` instead, which expands `P2PC_API` to
 nothing — those cannot be loaded by Panama, which needs a shared library).
 
 ```
-cmake --build build-win-cmake --config Release --target p2pmsgcore
+cmake --build build-win-cmake --config Release --target targetcore
 ```
 
 Confirm the surface really is exported — a DLL that built fine still exports
@@ -262,7 +262,7 @@ java --enable-native-access=ALL-UNNAMED -cp target\classes com.p2pmsgcore.SmokeT
 with the directory holding both DLLs **on `PATH`**.
 
 > **`-Djava.library.path` is no longer enough**, and this changed under us.
-> jextract 25 emits `SymbolLookup.libraryLookup(System.mapLibraryName("P2Pmsgcore"), …)`,
+> jextract 25 emits `SymbolLookup.libraryLookup(System.mapLibraryName("TargetCore"), …)`,
 > which goes through the OS loader search — executable directory, System32, `PATH` —
 > and does not consult `java.library.path` at all. A wrong path now produces
 > `IllegalArgumentException: Cannot open library: TargetCore.dll` from a static
@@ -443,7 +443,7 @@ two days earlier and nothing was checking. Every line of it is now an assertion.
 
 ## File layout
 
-The C wrapper is **not** in this repository — it is part of P2Pmsgcore:
+The C wrapper is **not** in this repository — it is part of TargetCore:
 
 ```
 <TargetCore>\
@@ -454,7 +454,7 @@ The C wrapper is **not** in this repository — it is part of P2Pmsgcore:
 ```
 
 ```
-MSCS_JavaBindings\P2Pmsgcore\
+MSCS_JavaBindings\TargetCore\
 ├── run_all.ps1                  stage + build + run + summarise
 ├── bin\                         staged DLLs (generated; not committed)
 ├── logs\                        per-test output (generated; not committed)
