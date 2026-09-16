@@ -14,11 +14,11 @@ Machine-generated files
 
 Everything under
 
-    TargetCore/java/src/main/java/com/targetcore/native_/
+    Targetcore/java/src/main/java/com/targetcore/native_/
     Msgcore/java/src/main/java/com/msgcore/native_/
 
 is jextract output, generated from this project's own C headers -- for
-TargetCore, from TargetCore_c.h in the TargetCore repository. It is
+Targetcore, from Targetcore_c.h in the Targetcore repository. It is
 covered by the licence above like the rest of the tree, and carries no
 per-file header for one reason: the files are REPLACED wholesale every
 time the bindings are regenerated (README.md, Step 3), so a header added
@@ -35,9 +35,9 @@ jextract itself is an OpenJDK tool and is not redistributed here.
 The native libraries
 -------------------------------------------------------------------------
 
-This repository contains no binaries. P2PmsgFacade.dll, TargetCore.dll and
+This repository contains no binaries. P2PmsgFacade.dll, Targetcore.dll and
 Msgcore.dll are built from their own repositories and staged into bin\ at
-run time by run_all.ps1; each carries its own NOTICE, and TargetCore's names
+run time by run_all.ps1; each carries its own NOTICE, and Targetcore's names
 files that are NOT covered by the Apache License, Version 2.0.
 
 A DISTRIBUTION assembled from this repository is a different thing from the
@@ -50,7 +50,7 @@ Under the Apache License, Version 2.0:
 
     the Java bindings in this repository
     P2PmsgFacade.dll                    from the P2PmsgFacade repository
-    TargetCore.dll                      from the TargetCore repository
+    Targetcore.dll                      from the Targetcore repository
     Msgcore.dll                         from the Msgcore repository
 
     The three native repositories each carry their own LICENSE and NOTICE.
@@ -65,7 +65,7 @@ Under Microsoft's Distributable Code terms - NOT Apache-2.0:
     vcruntime140.dll,                   Studio licence, not under the
     vcruntime140_1.dll (x64)            licence above.
 
-    TargetCore.dll and Msgcore.dll are MFC extension DLLs built against the
+    Targetcore.dll and Msgcore.dll are MFC extension DLLs built against the
     shared MFC and /MD runtimes, so these travel with them and cannot be
     linked away.
 
@@ -74,7 +74,7 @@ Under Microsoft's Distributable Code terms - NOT Apache-2.0:
     bin\Release; only the Release set may leave the machine.
 
     Ship the current Visual C++ redistributable. A JDK that bundles an
-    msvcp140 older than 14.40 fails on the first call into TargetCore, and
+    msvcp140 older than 14.40 fails on the first call into Targetcore, and
     the JVM's own copy is what gets loaded.
 
 On Linux the native libraries carry no Microsoft component of any kind, and a

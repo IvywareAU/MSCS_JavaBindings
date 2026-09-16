@@ -15,7 +15,7 @@
 //
 package com.targetcore;
 
-import com.targetcore.native_.TargetCore_c;
+import com.targetcore.native_.Targetcore_c;
 
 /**
  * The answer to "would this hub arm?" — {@code p2pauth::ArmResult} as it crosses
@@ -31,7 +31,7 @@ import com.targetcore.native_.TargetCore_c;
  * means somebody called {@code requireAuth(false)}, and the hub will start and
  * accept anyone.
  *
- * <p><b>Since 2026-08-21 the gate asks a second question</b> (TargetCore
+ * <p><b>Since 2026-08-21 the gate asks a second question</b> (Targetcore
  * ProductionPlan.md Stage 3 step 19): a hub that requires authentication must
  * also hold a <i>position</i> on revocation. Name a list, or say
  * {@code requireRevocation(false)}. A hub that does neither reports
@@ -89,7 +89,7 @@ public enum ArmResult {
      * diagnostic and the C++ diagnostic for the same state cannot disagree.
      */
     public String text() {
-        return NativeStrings.fromU8(TargetCore_c.p2peerhub_auth_arm_text(code));
+        return NativeStrings.fromU8(Targetcore_c.p2peerhub_auth_arm_text(code));
     }
 
     /** Maps a raw {@code ArmResult} int to a constant. */

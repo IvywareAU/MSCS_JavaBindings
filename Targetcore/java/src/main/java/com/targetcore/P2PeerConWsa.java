@@ -15,7 +15,7 @@
 //
 package com.targetcore;
 
-import com.targetcore.native_.TargetCore_c;
+import com.targetcore.native_.Targetcore_c;
 import java.lang.foreign.*;
 
 /**
@@ -66,7 +66,7 @@ public final class P2PeerConWsa implements AutoCloseable {
      */
     public static P2PeerConWsa clientFactory(String peerAddr, String ipAddress, int port) {
         try (Arena tmp = Arena.ofConfined()) {
-            MemorySegment h = TargetCore_c.p2peerconwsa_client_factory(
+            MemorySegment h = Targetcore_c.p2peerconwsa_client_factory(
                     NativeStrings.toWStr(peerAddr,   tmp),
                     NativeStrings.toWStr(ipAddress,  tmp),
                     (short) port);
@@ -84,7 +84,7 @@ public final class P2PeerConWsa implements AutoCloseable {
      */
     public static P2PeerConWsa serviceFactory(String peerAddr, int port) {
         try (Arena tmp = Arena.ofConfined()) {
-            MemorySegment h = TargetCore_c.p2peerconwsa_service_factory(
+            MemorySegment h = Targetcore_c.p2peerconwsa_service_factory(
                     NativeStrings.toWStr(peerAddr, tmp),
                     (short) port);
             if (h == null || h.equals(MemorySegment.NULL))
@@ -101,7 +101,7 @@ public final class P2PeerConWsa implements AutoCloseable {
      */
     public boolean connect() {
         checkOpen();
-        return TargetCore_c.p2peerconwsa_connect(handle) != 0;
+        return Targetcore_c.p2peerconwsa_connect(handle) != 0;
     }
 
     /**
@@ -110,13 +110,13 @@ public final class P2PeerConWsa implements AutoCloseable {
      */
     public boolean listen() {
         checkOpen();
-        return TargetCore_c.p2peerconwsa_listen(handle) != 0;
+        return Targetcore_c.p2peerconwsa_listen(handle) != 0;
     }
 
     /** Closes the connection gracefully. */
     public void closeConnection() {
         checkOpen();
-        TargetCore_c.p2peerconwsa_close(handle);
+        Targetcore_c.p2peerconwsa_close(handle);
     }
 
     // ── State queries ─────────────────────────────────────────────────────────
@@ -127,13 +127,13 @@ public final class P2PeerConWsa implements AutoCloseable {
      */
     public int getState(int mask) {
         checkOpen();
-        return TargetCore_c.p2peerconwsa_get_state(handle, mask);
+        return Targetcore_c.p2peerconwsa_get_state(handle, mask);
     }
 
     /** Returns {@code true} if all bits in {@code mask} are set. */
     public boolean hasState(int mask) {
         checkOpen();
-        return TargetCore_c.p2peerconwsa_has_state(handle, mask) != 0;
+        return Targetcore_c.p2peerconwsa_has_state(handle, mask) != 0;
     }
 
     /**
@@ -142,13 +142,13 @@ public final class P2PeerConWsa implements AutoCloseable {
      */
     public int mode() {
         checkOpen();
-        return TargetCore_c.p2peerconwsa_get_mode(handle);
+        return Targetcore_c.p2peerconwsa_get_mode(handle);
     }
 
     /** Returns the P2P address string associated with this connection. */
     public String address() {
         checkOpen();
-        return NativeStrings.fromWStr(TargetCore_c.p2peerconwsa_get_address(handle));
+        return NativeStrings.fromWStr(Targetcore_c.p2peerconwsa_get_address(handle));
     }
 
     // ── Message posting ───────────────────────────────────────────────────────
@@ -162,7 +162,7 @@ public final class P2PeerConWsa implements AutoCloseable {
      */
     public P2PMsg postMessage(P2PMsg msg) {
         checkOpen();
-        MemorySegment result = TargetCore_c.p2peerconwsa_post_msg(handle, msg.rawHandle());
+        MemorySegment result = Targetcore_c.p2peerconwsa_post_msg(handle, msg.rawHandle());
         msg.detach();
         return result != null && !result.equals(MemorySegment.NULL) ? new P2PMsg(result) : null;
     }
@@ -186,7 +186,7 @@ public final class P2PeerConWsa implements AutoCloseable {
     @Override
     public void close() {
         if (!closed) {
-            TargetCore_c.p2peerconwsa_destroy(handle);
+            Targetcore_c.p2peerconwsa_destroy(handle);
             closed = true;
         }
     }
@@ -202,7 +202,7 @@ public final class P2PeerConWsa implements AutoCloseable {
     /** {@link #clientFactory} over the UTF-8 {@code _u8} C API. */
     public static P2PeerConWsa clientFactoryUtf8(String thatAddr, String ipAddress, int port) {
         try (Arena tmp = Arena.ofConfined()) {
-            return new P2PeerConWsa(TargetCore_c.p2peerconwsa_client_factory_u8(
+            return new P2PeerConWsa(Targetcore_c.p2peerconwsa_client_factory_u8(
                     NativeStrings.toU8(thatAddr,  tmp),
                     NativeStrings.toU8(ipAddress, tmp),
                     (short) port));
@@ -212,7 +212,7 @@ public final class P2PeerConWsa implements AutoCloseable {
     /** {@link #serviceFactory} over the UTF-8 {@code _u8} C API. */
     public static P2PeerConWsa serviceFactoryUtf8(String thatAddr, int port) {
         try (Arena tmp = Arena.ofConfined()) {
-            return new P2PeerConWsa(TargetCore_c.p2peerconwsa_service_factory_u8(
+            return new P2PeerConWsa(Targetcore_c.p2peerconwsa_service_factory_u8(
                     NativeStrings.toU8(thatAddr, tmp), (short) port));
         }
     }
@@ -220,6 +220,6 @@ public final class P2PeerConWsa implements AutoCloseable {
     /** This connection's peer address, decoded from UTF-8. */
     public String addressUtf8() {
         checkOpen();
-        return NativeStrings.fromU8(TargetCore_c.p2peerconwsa_get_address_u8(handle));
+        return NativeStrings.fromU8(Targetcore_c.p2peerconwsa_get_address_u8(handle));
     }
 }

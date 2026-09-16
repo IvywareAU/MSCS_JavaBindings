@@ -15,7 +15,7 @@
 //
 package com.targetcore;
 
-import com.targetcore.native_.TargetCore_c;
+import com.targetcore.native_.Targetcore_c;
 
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +32,7 @@ import java.util.*;
  * printed "passed", and a Java caller simply could not start a hub.
  *
  * <p>The comparison is against {@code .github/ci/abi-flat.manifest} in a
- * TargetCore checkout, which VERSIONING.md §2 names as <i>the</i> enumeration of
+ * Targetcore checkout, which VERSIONING.md §2 names as <i>the</i> enumeration of
  * the covered surface. It is deliberately read from over there rather than copied
  * to here: an ABI definition duplicated across two repositories drifts, and this
  * one already had.
@@ -46,7 +46,7 @@ import java.util.*;
 public class AbiCoverage {
 
     private static final String DEFAULT_MANIFEST =
-            "../../../MSCS/TargetCore/.github/ci/abi-flat.manifest";
+            "../../../MSCS/Targetcore/.github/ci/abi-flat.manifest";
 
     /**
      * The one entry point deliberately left unbound at the wrapper layer. The
@@ -72,7 +72,7 @@ public class AbiCoverage {
         }
 
         SortedSet<String> bound = new TreeSet<>();
-        for (Method m : TargetCore_c.class.getDeclaredMethods()) {
+        for (Method m : Targetcore_c.class.getDeclaredMethods()) {
             String n = m.getName();
             //  jextract emits name(), name$descriptor(), name$handle(), name$address().
             if (n.indexOf('$') >= 0) continue;

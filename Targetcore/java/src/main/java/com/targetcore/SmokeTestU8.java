@@ -24,7 +24,7 @@ package com.targetcore;
  *
  * Run after the native DLL/so is on java.library.path:
  *   java --enable-native-access=ALL-UNNAMED
- *        -Djava.library.path=path\to\TargetCore.dll
+ *        -Djava.library.path=path\to\Targetcore.dll
  *        -cp target\classes
  *        com.targetcore.SmokeTestU8
  */

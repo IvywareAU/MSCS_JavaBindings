@@ -15,7 +15,7 @@
 //
 package com.targetcore;
 
-import com.targetcore.native_.TargetCore_c;
+import com.targetcore.native_.Targetcore_c;
 
 /**
  * Process-wide lifecycle for the P2Pmsg environment.
@@ -30,17 +30,17 @@ import com.targetcore.native_.TargetCore_c;
  * code that only builds addresses and messages can skip startup entirely.
  *
  * <pre>{@code
- * TargetCore.startup(16);
+ * Targetcore.startup(16);
  * try {
  *     // ... hubs, connections, messages ...
  * } finally {
- *     TargetCore.cleanup();
+ *     Targetcore.cleanup();
  * }
  * }</pre>
  */
-public final class TargetCore {
+public final class Targetcore {
 
-    private TargetCore() {}
+    private Targetcore() {}
 
     /**
      * Initialises the shared hub/pump locks and the hub-manager table.
@@ -49,12 +49,12 @@ public final class TargetCore {
      * @throws IllegalStateException if the environment could not be initialised
      */
     public static void startup(int maxHubs) {
-        if (TargetCore_c.targetcore_startup(maxHubs) == 0)
+        if (Targetcore_c.targetcore_startup(maxHubs) == 0)
             throw new IllegalStateException("targetcore_startup(" + maxHubs + ") failed");
     }
 
     /** Tears the environment back down. Safe to call once, at the end. */
     public static void cleanup() {
-        TargetCore_c.targetcore_cleanup();
+        Targetcore_c.targetcore_cleanup();
     }
 }

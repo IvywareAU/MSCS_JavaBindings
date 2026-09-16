@@ -67,11 +67,11 @@ public class SmokeTestSink {
 
     public static void main(String[] args) throws Exception {
 
-        TargetCore.startup(16);
+        Targetcore.startup(16);
         try {
             run();
         } finally {
-            TargetCore.cleanup();
+            Targetcore.cleanup();
         }
 
         if (arrived.getCount() != 0) {

@@ -31,13 +31,13 @@ public final class P2PeerHubSinkFn {
     }
 
     private static final FunctionDescriptor $DESC = FunctionDescriptor.of(
-        TargetCore_c.C_INT,
-        TargetCore_c.C_POINTER,
-        TargetCore_c.C_POINTER,
-        TargetCore_c.C_POINTER,
-        TargetCore_c.C_POINTER,
-        TargetCore_c.C_POINTER,
-        TargetCore_c.C_LONG_LONG
+        Targetcore_c.C_INT,
+        Targetcore_c.C_POINTER,
+        Targetcore_c.C_POINTER,
+        Targetcore_c.C_POINTER,
+        Targetcore_c.C_POINTER,
+        Targetcore_c.C_POINTER,
+        Targetcore_c.C_LONG_LONG
     );
 
     /**
@@ -47,7 +47,7 @@ public final class P2PeerHubSinkFn {
         return $DESC;
     }
 
-    private static final MethodHandle UP$MH = TargetCore_c.upcallHandle(P2PeerHubSinkFn.Function.class, "apply", $DESC);
+    private static final MethodHandle UP$MH = Targetcore_c.upcallHandle(P2PeerHubSinkFn.Function.class, "apply", $DESC);
 
     /**
      * Allocates a new upcall stub, whose implementation is defined by {@code fi}.

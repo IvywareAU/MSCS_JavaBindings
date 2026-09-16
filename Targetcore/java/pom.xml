@@ -25,7 +25,7 @@
   <artifactId>targetcore-java</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <description>Java Panama FFI bindings for the TargetCore native library</description>
+  <description>Java Panama FFI bindings for the Targetcore native library</description>
 
   <properties>
     <!-- 23, RAISED FROM 22 ON 2026-08-21, and it is a supported-JDK change
@@ -43,13 +43,13 @@
     <maven.compiler.release>23</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Directory holding TargetCore.dll (and the Msgcore.dll it imports).
-         The native sources live in the TargetCore repository, not this one, so
+    <!-- Directory holding Targetcore.dll (and the Msgcore.dll it imports).
+         The native sources live in the Targetcore repository, not this one, so
          this points into a checkout of it; override per site:
-             mvn test -Dtargetcore.lib.dir=D:\path\to\TargetCore\out\x64\Release
+             mvn test -Dtargetcore.lib.dir=D:\path\to\Targetcore\out\x64\Release
          It used to default to ../native/build, back when this tree carried its
          own copy of the C wrapper. That copy was deleted on 2026-08-14. -->
-    <targetcore.lib.dir>${project.basedir}/../../../MSCS/TargetCore/out/x64/Release</targetcore.lib.dir>
+    <targetcore.lib.dir>${project.basedir}/../../../MSCS/Targetcore/out/x64/Release</targetcore.lib.dir>
   </properties>
 
   <build>
@@ -83,7 +83,7 @@
         <configuration>
           <argLine>--enable-native-access=ALL-UNNAMED</argLine>
           <systemPropertyVariables>
-            <!-- Adjust to the directory that holds TargetCore.dll -->
+            <!-- Adjust to the directory that holds Targetcore.dll -->
             <java.library.path>${targetcore.lib.dir}</java.library.path>
           </systemPropertyVariables>
         </configuration>

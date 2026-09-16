@@ -12,9 +12,9 @@ import java.util.stream.*;
 import static java.lang.foreign.ValueLayout.*;
 import static java.lang.foreign.MemoryLayout.PathElement.*;
 
-public class TargetCore_c$shared {
+public class Targetcore_c$shared {
 
-    TargetCore_c$shared() {
+    Targetcore_c$shared() {
         // Should not be called directly
     }
 

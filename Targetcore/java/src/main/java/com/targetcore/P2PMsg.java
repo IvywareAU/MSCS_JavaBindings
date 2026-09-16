@@ -15,7 +15,7 @@
 //
 package com.targetcore;
 
-import com.targetcore.native_.TargetCore_c;
+import com.targetcore.native_.Targetcore_c;
 import java.lang.foreign.*;
 import java.nio.charset.StandardCharsets;
 
@@ -44,13 +44,13 @@ public final class P2PMsg implements AutoCloseable {
 
     /** Creates an empty message with no address or payload. */
     public P2PMsg() {
-        this.handle = TargetCore_c.p2peermsg_create();
+        this.handle = Targetcore_c.p2peermsg_create();
     }
 
     /** Creates a message with a message-ID name only (no addresses or data). */
     public P2PMsg(String msgID) {
         try (Arena tmp = Arena.ofConfined()) {
-            this.handle = TargetCore_c.p2peermsg_create_msgid(NativeStrings.toWStr(msgID, tmp));
+            this.handle = Targetcore_c.p2peermsg_create_msgid(NativeStrings.toWStr(msgID, tmp));
         }
     }
 
@@ -74,7 +74,7 @@ public final class P2PMsg implements AutoCloseable {
             //  MAX_P2Psize (32768) and an over-cap message is REFUSED downstream,
             //  which surfaces here as a null handle rather than a short payload.
             int size = data != null ? data.length : 0;
-            this.handle = TargetCore_c.p2peermsg_create_full(
+            this.handle = Targetcore_c.p2peermsg_create_full(
                     NativeStrings.toWStr(src,   tmp),
                     NativeStrings.toWStr(dst,   tmp),
                     NativeStrings.toWStr(msgID, tmp),
@@ -106,34 +106,34 @@ public final class P2PMsg implements AutoCloseable {
     /** Returns the message name / ID string. */
     public String name() {
         checkOpen();
-        return NativeStrings.fromWStr(TargetCore_c.p2peermsg_c_name(handle));
+        return NativeStrings.fromWStr(Targetcore_c.p2peermsg_c_name(handle));
     }
 
     /** Returns the source P2P address string. */
     public String source() {
         checkOpen();
-        return NativeStrings.fromWStr(TargetCore_c.p2peermsg_get_source(handle));
+        return NativeStrings.fromWStr(Targetcore_c.p2peermsg_get_source(handle));
     }
 
     /** Sets the source P2P address. */
     public void setSource(String src) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            TargetCore_c.p2peermsg_set_source(handle, NativeStrings.toWStr(src, tmp));
+            Targetcore_c.p2peermsg_set_source(handle, NativeStrings.toWStr(src, tmp));
         }
     }
 
     /** Returns the destination P2P address string. */
     public String destination() {
         checkOpen();
-        return NativeStrings.fromWStr(TargetCore_c.p2peermsg_get_destin(handle));
+        return NativeStrings.fromWStr(Targetcore_c.p2peermsg_get_destin(handle));
     }
 
     /** Sets the destination P2P address. */
     public void setDestination(String dst) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            TargetCore_c.p2peermsg_set_destin(handle, NativeStrings.toWStr(dst, tmp));
+            Targetcore_c.p2peermsg_set_destin(handle, NativeStrings.toWStr(dst, tmp));
         }
     }
 
@@ -143,40 +143,40 @@ public final class P2PMsg implements AutoCloseable {
      */
     public byte[] data() {
         checkOpen();
-        long size = TargetCore_c.p2peermsg_data_size(handle);
+        long size = Targetcore_c.p2peermsg_data_size(handle);
         if (size <= 0) return new byte[0];
-        MemorySegment ptr = TargetCore_c.p2peermsg_data(handle);
+        MemorySegment ptr = Targetcore_c.p2peermsg_data(handle);
         return ptr.reinterpret(size).toArray(ValueLayout.JAVA_BYTE);
     }
 
     /** Returns the payload size in bytes. */
     public long dataSize() {
         checkOpen();
-        return TargetCore_c.p2peermsg_data_size(handle);
+        return Targetcore_c.p2peermsg_data_size(handle);
     }
 
     /** Returns the message routing priority (0 = flush, 7 = normal). */
     public int priority() {
         checkOpen();
-        return Byte.toUnsignedInt(TargetCore_c.p2peermsg_priority(handle));
+        return Byte.toUnsignedInt(Targetcore_c.p2peermsg_priority(handle));
     }
 
     /** Sets the message routing priority. Returns the previous value. */
     public int setPriority(int priority) {
         checkOpen();
-        return Byte.toUnsignedInt(TargetCore_c.p2peermsg_set_priority(handle, (byte) priority));
+        return Byte.toUnsignedInt(Targetcore_c.p2peermsg_set_priority(handle, (byte) priority));
     }
 
     /** Returns {@code true} if this message is wrapped inside another. */
     public boolean isWrapped() {
         checkOpen();
-        return TargetCore_c.p2peermsg_is_wrapped(handle) != 0;
+        return Targetcore_c.p2peermsg_is_wrapped(handle) != 0;
     }
 
     /** Returns {@code true} if this message has been reflected. */
     public boolean isReflected() {
         checkOpen();
-        return TargetCore_c.p2peermsg_is_reflected(handle) != 0;
+        return Targetcore_c.p2peermsg_is_reflected(handle) != 0;
     }
 
     // ── Factories ─────────────────────────────────────────────────────────────
@@ -199,7 +199,7 @@ public final class P2PMsg implements AutoCloseable {
             //  MAX_P2Psize (32768) and an over-cap message is REFUSED downstream,
             //  which surfaces here as a null handle rather than a short payload.
             int size = data != null ? data.length : 0;
-            MemorySegment h = TargetCore_c.p2peermsg_response_factory(
+            MemorySegment h = Targetcore_c.p2peermsg_response_factory(
                     handle, NativeStrings.toWStr(msgID, tmp), dataSeg, size);
             return new P2PMsg(h);
         }
@@ -212,7 +212,7 @@ public final class P2PMsg implements AutoCloseable {
     public P2PMsg redirectFactory(String dstAddr) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            MemorySegment h = TargetCore_c.p2peermsg_redirect_factory(
+            MemorySegment h = Targetcore_c.p2peermsg_redirect_factory(
                     handle, NativeStrings.toWStr(dstAddr, tmp));
             return new P2PMsg(h);
         }
@@ -227,7 +227,7 @@ public final class P2PMsg implements AutoCloseable {
     /** Creates a message with a UTF-8 message-ID name only, via the _u8 C API. */
     public static P2PMsg ofMsgIdUtf8(String msgID) {
         try (Arena tmp = Arena.ofConfined()) {
-            return new P2PMsg(TargetCore_c.p2peermsg_create_msgid_u8(NativeStrings.toU8(msgID, tmp)));
+            return new P2PMsg(Targetcore_c.p2peermsg_create_msgid_u8(NativeStrings.toU8(msgID, tmp)));
         }
     }
 
@@ -244,7 +244,7 @@ public final class P2PMsg implements AutoCloseable {
             //  MAX_P2Psize (32768) and an over-cap message is REFUSED downstream,
             //  which surfaces here as a null handle rather than a short payload.
             int size = data != null ? data.length : 0;
-            return new P2PMsg(TargetCore_c.p2peermsg_create_full_u8(
+            return new P2PMsg(Targetcore_c.p2peermsg_create_full_u8(
                     NativeStrings.toU8(src,   tmp),
                     NativeStrings.toU8(dst,   tmp),
                     NativeStrings.toU8(msgID, tmp),
@@ -256,7 +256,7 @@ public final class P2PMsg implements AutoCloseable {
     public int byteSize() {
         checkOpen();
         //  uint32_t since 2026-08-14 (was unsigned short).
-        return TargetCore_c.p2peermsg_sizeof(handle);
+        return Targetcore_c.p2peermsg_sizeof(handle);
     }
 
     /** {@link #responseFactory} over the UTF-8 {@code _u8} C API. */
@@ -267,7 +267,7 @@ public final class P2PMsg implements AutoCloseable {
                     ? tmp.allocateFrom(ValueLayout.JAVA_BYTE, data)
                     : MemorySegment.NULL;
             int size = data != null ? data.length : 0;
-            return new P2PMsg(TargetCore_c.p2peermsg_response_factory_u8(
+            return new P2PMsg(Targetcore_c.p2peermsg_response_factory_u8(
                     handle, NativeStrings.toU8(msgID, tmp), dataSeg, size));
         }
     }
@@ -276,7 +276,7 @@ public final class P2PMsg implements AutoCloseable {
     public P2PMsg redirectFactoryUtf8(String dstAddr) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            return new P2PMsg(TargetCore_c.p2peermsg_redirect_factory_u8(
+            return new P2PMsg(Targetcore_c.p2peermsg_redirect_factory_u8(
                     handle, NativeStrings.toU8(dstAddr, tmp)));
         }
     }
@@ -284,34 +284,34 @@ public final class P2PMsg implements AutoCloseable {
     /** Returns the message name / ID as a UTF-8-decoded String. */
     public String nameUtf8() {
         checkOpen();
-        return NativeStrings.fromU8(TargetCore_c.p2peermsg_c_name_u8(handle));
+        return NativeStrings.fromU8(Targetcore_c.p2peermsg_c_name_u8(handle));
     }
 
     /** Returns the source address as a UTF-8-decoded String. */
     public String sourceUtf8() {
         checkOpen();
-        return NativeStrings.fromU8(TargetCore_c.p2peermsg_get_source_u8(handle));
+        return NativeStrings.fromU8(Targetcore_c.p2peermsg_get_source_u8(handle));
     }
 
     /** Sets the source address from a UTF-8 String. */
     public void setSourceUtf8(String src) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            TargetCore_c.p2peermsg_set_source_u8(handle, NativeStrings.toU8(src, tmp));
+            Targetcore_c.p2peermsg_set_source_u8(handle, NativeStrings.toU8(src, tmp));
         }
     }
 
     /** Returns the destination address as a UTF-8-decoded String. */
     public String destinationUtf8() {
         checkOpen();
-        return NativeStrings.fromU8(TargetCore_c.p2peermsg_get_destin_u8(handle));
+        return NativeStrings.fromU8(Targetcore_c.p2peermsg_get_destin_u8(handle));
     }
 
     /** Sets the destination address from a UTF-8 String. */
     public void setDestinationUtf8(String dst) {
         checkOpen();
         try (Arena tmp = Arena.ofConfined()) {
-            TargetCore_c.p2peermsg_set_destin_u8(handle, NativeStrings.toU8(dst, tmp));
+            Targetcore_c.p2peermsg_set_destin_u8(handle, NativeStrings.toU8(dst, tmp));
         }
     }
 
@@ -323,7 +323,7 @@ public final class P2PMsg implements AutoCloseable {
     @Override
     public void close() {
         if (!closed) {
-            TargetCore_c.p2peermsg_destroy(handle);
+            Targetcore_c.p2peermsg_destroy(handle);
             closed = true;
         }
     }

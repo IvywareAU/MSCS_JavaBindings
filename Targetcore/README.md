@@ -1,6 +1,6 @@
-# TargetCore – Java Panama FFI Bindings
+# Targetcore – Java Panama FFI Bindings
 
-Exposes TargetCore's flat `extern "C"` surface to Java through the Panama Foreign
+Exposes Targetcore's flat `extern "C"` surface to Java through the Panama Foreign
 Function Interface (Java 23+), with hand-written wrappers over the generated layer.
 
 | C++ class      | Java wrapper          | Purpose                            |
@@ -9,20 +9,20 @@ Function Interface (Java 23+), with hand-written wrappers over the generated lay
 | `P2PeerMsg`    | `P2PMsg`              | Addressed message with payload     |
 | `P2PeerConWsa` | `P2PeerConWsa`        | Async TCP/IP connection (WSA/IOCP) |
 | `P2PeerHub`    | `P2PeerHub`           | Message routing hub, authentication, receive sink |
-| —              | `TargetCore`          | Process lifecycle (`startup` / `cleanup`) |
+| —              | `Targetcore`          | Process lifecycle (`startup` / `cleanup`) |
 | —              | `ArmResult`, `IdResult` | The two result enums the ABI returns as `int` |
 
-**Status: 6/6**, re-measured 2026-09-08 against `TargetCore.dll` 3.0.0.0
+**Status: 6/6**, re-measured 2026-09-08 against `Targetcore.dll` 3.0.0.0
 (**101** flat C entry points, all 101 covered) on a single **JDK 25.0.4.1** whose
 bundled msvcp140 is 14.40 — see *The two requirements pinch* below, which one JDK
 now satisfies on its own. Run them with `.\run_all.ps1`.
 
 > **Renamed 2026-09-08.** The library this binds was `P2Pmsgcore.dll` and is now
-> `TargetCore.dll`; `p2pmsgcore_startup` / `_cleanup` became `targetcore_startup` /
+> `Targetcore.dll`; `p2pmsgcore_startup` / `_cleanup` became `targetcore_startup` /
 > `_cleanup`, and eight trust and link-policy entry points arrived with it. The
 > bindings followed the whole way: the directory, the Java package
 > (`com.p2pmsgcore` -> `com.targetcore`), the generated class (`P2Pmsgcore_c` ->
-> `TargetCore_c`), the lifecycle class (`P2Pmsgcore` -> `TargetCore`), the Maven
+> `Targetcore_c`), the lifecycle class (`P2Pmsgcore` -> `Targetcore`), the Maven
 > coordinates, and the `-D` property names. **This is a source break** -- every
 > `import com.p2pmsgcore.*` has to change. It was taken deliberately: the old name
 > on the published surface would have outlived anyone's memory of why it was there.
@@ -53,7 +53,7 @@ hub *at all* — and could not turn the requirement off either, because
 `require_auth` was one of the missing eleven.
 
 `AbiCoverage` now exists so that this fails loudly instead of quietly. It reads
-`abi-flat.manifest` out of the TargetCore checkout — the file VERSIONING.md §2
+`abi-flat.manifest` out of the Targetcore checkout — the file VERSIONING.md §2
 names as *the* enumeration of the covered surface — and refuses to pass if any
 promised name has no generated binding. It is deliberately not a copy of that list
 kept here: a copy is precisely what drifted last time.
@@ -69,8 +69,8 @@ any kind. `hs_err_pid*.log` blames `msvcp140.dll+0x12f58`.
 **Cause:** a JDK ships its own `msvcp140.dll` / `VCRUNTIME140.dll` in `bin\`, and
 `jvm.dll` imports them, so they are loaded before any of your code runs. Windows
 resolves a DLL's imports against whatever module of that base name is *already*
-loaded — so `TargetCore.dll` gets the JDK's copy, not the system's, and no `PATH`,
-`java.library.path` or load order can change that. TargetCore is built with MSVC
+loaded — so `Targetcore.dll` gets the JDK's copy, not the system's, and no `PATH`,
+`java.library.path` or load order can change that. Targetcore is built with MSVC
 14.4x and uses `std::mutex`, whose constructor became `constexpr` in toolset
 **14.40** (VS 2022 17.10); against an older runtime it dereferences null.
 
@@ -87,7 +87,7 @@ the only variable:
 **What to do:** run on a JDK 23+ whose `bin\msvcp140.dll` is **14.40 or newer**.
 `run_all.ps1` checks this before it runs anything and stops with an explanation
 rather than letting the JVM crash. If your JDK is older, the supported answers are
-to use a different JDK, or to build TargetCore with an older toolset — replacing
+to use a different JDK, or to build Targetcore with an older toolset — replacing
 files inside a JDK is neither.
 
 **The two requirements pinch, and on 2026-08-21 no ordinary JDK on the test
@@ -124,10 +124,10 @@ because it is still the answer on any machine whose only 23+ JDK bundles 14.36.
 | jextract    | 25       | Only needed to regenerate; the output is committed. **Pinned rather than a floor**: jextract 22 emitted `find(...).orElseThrow()` and 25 emits `findOrThrow()`, so the tool version decides the Java floor above. Regenerating with an older one lowers it again, and that is a decision rather than an accident. |
 | Maven       | 3.9+     | `mvn compile` |
 | MSVC        | 2022     | builds the DLL |
-| A TargetCore checkout | existing | supplies the C wrapper sources, the header jextract reads, **and** the ABI manifest `AbiCoverage` checks against |
+| A Targetcore checkout | existing | supplies the C wrapper sources, the header jextract reads, **and** the ABI manifest `AbiCoverage` checks against |
 
-Throughout, `<TargetCore>` means the root of that checkout — the directory holding
-`TargetCore(2022).vcxproj` and `TargetCore_c.h`.
+Throughout, `<Targetcore>` means the root of that checkout — the directory holding
+`Targetcore(2022).vcxproj` and `Targetcore_c.h`.
 
 ---
 
@@ -137,35 +137,35 @@ Throughout, `<TargetCore>` means the root of that checkout — the directory hol
 .\run_all.ps1                      # stage DLLs, mvn compile, run all six tests
 .\run_all.ps1 -Config Debug
 .\run_all.ps1 -Java "C:\path\to\jdk\bin\java.exe"
-.\run_all.ps1 -LibDir D:\build\TargetCore\Release
+.\run_all.ps1 -LibDir D:\build\Targetcore\Release
 ```
 
-It stages `TargetCore.dll` **and** the `Msgcore.dll` from the same build into
+It stages `Targetcore.dll` **and** the `Msgcore.dll` from the same build into
 `bin\`, puts that directory on `PATH`, and reports each test by exit code
 (0 PASS, 1 FAIL, 2 SETUP, 3 INCONCLUSIVE).
 
 Both DLLs must come from the same build. A mismatched pair produces the least
-helpful error in this toolchain — `Cannot open library: TargetCore.dll`, naming
+helpful error in this toolchain — `Cannot open library: Targetcore.dll`, naming
 the DLL that *was* found and saying nothing about the dependency that was not.
 
 ---
 
 ## Step 1 – Build the DLL
 
-**The C wrapper lives in TargetCore, not here.** `TargetCore_c.h`,
-`TargetCore_c.cpp` and `TargetCore_c_u8.cpp` are ordinary sources of that project,
-listed in both `TargetCore(2022).vcxproj` and its `CMakeLists.txt`, so they are
-compiled into `TargetCore.dll` and `libtargetcore.so` by an ordinary build.
+**The C wrapper lives in Targetcore, not here.** `Targetcore_c.h`,
+`Targetcore_c.cpp` and `Targetcore_c_u8.cpp` are ordinary sources of that project,
+listed in both `Targetcore(2022).vcxproj` and its `CMakeLists.txt`, so they are
+compiled into `Targetcore.dll` and `libtargetcore.so` by an ordinary build.
 
 > This tree used to carry its own copy under `native\`, and Step 1 used to be
-> "copy these three files into TargetCore". That copy was **deleted on
+> "copy these three files into Targetcore". That copy was **deleted on
 > 2026-08-14**: an ABI definition duplicated across two repositories drifts, and
 > this one already had — the copy here sat several fixes behind the library it
 > described, including the handle registry every entry point now depends on.
 
-In the project's **Preprocessor Definitions** make sure `TargetCore_EXPORTS` is
+In the project's **Preprocessor Definitions** make sure `Targetcore_EXPORTS` is
 defined (it already is for the DLL target; the static `DebugLib`/`ReleaseLib`
-configurations define `TargetCore_STATIC` instead, which expands `P2PC_API` to
+configurations define `Targetcore_STATIC` instead, which expands `P2PC_API` to
 nothing — those cannot be loaded by Panama, which needs a shared library).
 
 ```
@@ -173,12 +173,12 @@ cmake --build build-win-cmake --config Release --target targetcore
 ```
 
 Confirm the surface really is exported — a DLL that built fine still exports
-nothing if `TargetCore_EXPORTS` was missing:
+nothing if `Targetcore_EXPORTS` was missing:
 
 ```
-python <TargetCore>\.github\ci\check_abi_exports.py ^
-       --library build-win-cmake\TargetCore\Release\TargetCore.dll ^
-       --manifest <TargetCore>\.github\ci\abi-flat.manifest ^
+python <Targetcore>\.github\ci\check_abi_exports.py ^
+       --library build-win-cmake\Targetcore\Release\Targetcore.dll ^
+       --manifest <Targetcore>\.github\ci\abi-flat.manifest ^
        --dumpbin  "<VS>\VC\Tools\MSVC\<ver>\bin\Hostx64\x64\dumpbin.exe"
 ```
 
@@ -198,26 +198,26 @@ Run bare, jextract also emits every declaration reachable through
 Filter the includes to this header and set the class name:
 
 ```bat
-cd <TargetCore>
+cd <Targetcore>
 
 :: 1) dump every include option, then keep only the ones from THIS header
-jextract --dump-includes jx_dump.txt TargetCore_c.h
-findstr /R "^--include-" jx_dump.txt | findstr "TargetCore_c.h" > jx_filter.args
+jextract --dump-includes jx_dump.txt Targetcore_c.h
+findstr /R "^--include-" jx_dump.txt | findstr "Targetcore_c.h" > jx_filter.args
 
 :: 2) generate, filtered, with the class name the wrappers expect
 jextract ^
   --output <bindings>\java\src\main\java ^
   --target-package com.targetcore.native_ ^
-  --header-class-name TargetCore_c ^
-  --library TargetCore ^
+  --header-class-name Targetcore_c ^
+  --library Targetcore ^
   @jx_filter.args ^
-  TargetCore_c.h
+  Targetcore_c.h
 ```
 
 The filter should come out at **107 lines: 101 `--include-function` and 6
 `--include-typedef`.** If the function count is not 101, the header and this
 document have diverged — check the manifest. It was 83 until 2026-08-21, when
-the revocation and sealing defaults added ten entry points (TargetCore
+the revocation and sealing defaults added ten entry points (Targetcore
 ProductionPlan.md Stage 3 steps 19 and 20), and 93 until 2026-09-08, when the
 rename brought `targetcore_startup` / `_cleanup` and eight trust and link-policy
 entry points.
@@ -226,8 +226,8 @@ That writes four files into `...\native_\`:
 
 | file | what it is |
 |---|---|
-| `TargetCore_c.java` | one `MethodHandle` + typed static method per C function |
-| `TargetCore_c$shared.java` | the layout constants split out |
+| `Targetcore_c.java` | one `MethodHandle` + typed static method per C function |
+| `Targetcore_c$shared.java` | the layout constants split out |
 | `P2PeerHubSinkFnU8.java` | upcall-stub factory for the UTF-8 receive-sink typedef |
 | `P2PeerHubSinkFn.java` | the same for the `wchar_t` sink |
 
@@ -266,10 +266,10 @@ java --enable-native-access=ALL-UNNAMED -cp target\classes com.targetcore.SmokeT
 with the directory holding both DLLs **on `PATH`**.
 
 > **`-Djava.library.path` is no longer enough**, and this changed under us.
-> jextract 25 emits `SymbolLookup.libraryLookup(System.mapLibraryName("TargetCore"), …)`,
+> jextract 25 emits `SymbolLookup.libraryLookup(System.mapLibraryName("Targetcore"), …)`,
 > which goes through the OS loader search — executable directory, System32, `PATH` —
 > and does not consult `java.library.path` at all. A wrong path now produces
-> `IllegalArgumentException: Cannot open library: TargetCore.dll` from a static
+> `IllegalArgumentException: Cannot open library: Targetcore.dll` from a static
 > initialiser. `run_all.ps1` sets `PATH` for you.
 
 > **And `java` itself must be the run JDK**, not whatever `PATH` hands you. `mvn`
@@ -285,11 +285,11 @@ with the directory holding both DLLs **on `PATH`**.
 ## Lifecycle — call startup before any hub
 
 ```java
-TargetCore.startup(16);          // 16 = max hubs; throws if it fails
+Targetcore.startup(16);          // 16 = max hubs; throws if it fails
 try {
     // ... create/spawn hubs, connections, post messages ...
 } finally {
-    TargetCore.cleanup();
+    Targetcore.cleanup();
 }
 ```
 
@@ -455,18 +455,18 @@ two days earlier and nothing was checking. Every line of it is now an assertion.
 
 ## File layout
 
-The C wrapper is **not** in this repository — it is part of TargetCore:
+The C wrapper is **not** in this repository — it is part of Targetcore:
 
 ```
-<TargetCore>\
-├── TargetCore_c.h               <- extern "C" wrapper header (jextract reads this)
-├── TargetCore_c.cpp
-├── TargetCore_c_u8.cpp          <- the _u8 entry points
+<Targetcore>\
+├── Targetcore_c.h               <- extern "C" wrapper header (jextract reads this)
+├── Targetcore_c.cpp
+├── Targetcore_c_u8.cpp          <- the _u8 entry points
 └── .github\ci\abi-flat.manifest <- what AbiCoverage checks against
 ```
 
 ```
-MSCS_JavaBindings\TargetCore\
+MSCS_JavaBindings\Targetcore\
 ├── run_all.ps1                  stage + build + run + summarise
 ├── bin\                         staged DLLs (generated; not committed)
 ├── logs\                        per-test output (generated; not committed)
@@ -475,7 +475,7 @@ MSCS_JavaBindings\TargetCore\
     └── src\main\java\com\targetcore\
         ├── native_\             GENERATED by jextract - do not hand-edit
         ├── NativeStrings.java   wchar_t / UTF-8 <-> String
-        ├── TargetCore.java      startup / cleanup
+        ├── Targetcore.java      startup / cleanup
         ├── P2PAddr.java  P2PMsg.java  P2PeerConWsa.java  P2PeerHub.java
         ├── ArmResult.java  IdResult.java
         └── SmokeTest*.java  AbiCoverage.java

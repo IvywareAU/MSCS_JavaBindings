@@ -8,7 +8,7 @@ Two independent binding projects live here, one per native library:
 
 | Project | Binds | Java package | Status |
 |---|---|---|---|
-| [`TargetCore/`](TargetCore/README.md) | `TargetCore.dll` — P2P messaging: addresses, messages, connections, hubs, authentication | `com.targetcore` | 101/101 entry points bound; 6/6 tests |
+| [`Targetcore/`](Targetcore/README.md) | `Targetcore.dll` — P2P messaging: addresses, messages, connections, hubs, authentication | `com.targetcore` | 101/101 entry points bound; 6/6 tests |
 | [`Msgcore/`](Msgcore/Readme.md) | `Msgcore.dll` — the persistent message store: fields, lists, vectors, attributes, cursors | `com.msgcore` | 282/282 entry points bound, 119 with friendly wrappers; 4/4 tests |
 
 They share no code. Each has its own `pom.xml`, its own `run_all.ps1`, and its own
@@ -20,7 +20,7 @@ only what is true of both.
 ## Quick start
 
 ```powershell
-cd TargetCore ; .\run_all.ps1        # stage DLLs, mvn compile, run every test
+cd Targetcore ; .\run_all.ps1        # stage DLLs, mvn compile, run every test
 cd Msgcore    ; .\run_all.ps1
 ```
 
@@ -32,13 +32,13 @@ compiles, runs each test, and reports it by exit code (0 PASS, 1 FAIL, 2 SETUP,
 
 | Tool | Version | Notes |
 |---|---|---|
-| Java | **23+** for TargetCore, 22+ for Msgcore | The floor is set by the generator, not by the bindings: jextract 25 emits `SymbolLookup.findOrThrow()`, a JDK 23 method. See the TargetCore README for the JDK 22 shim. |
+| Java | **23+** for Targetcore, 22+ for Msgcore | The floor is set by the generator, not by the bindings: jextract 25 emits `SymbolLookup.findOrThrow()`, a JDK 23 method. See the Targetcore README for the JDK 22 shim. |
 | Maven | 3.9+ | `mvn compile` |
 | jextract | 25 | Only to regenerate — the output is committed |
 | MSVC | 2022 | Builds the DLLs |
 | A checkout of the native library | existing | Supplies the C wrapper sources and the header jextract reads |
 
-**This repository contains no binaries.** `TargetCore.dll`, `Msgcore.dll` and
+**This repository contains no binaries.** `Targetcore.dll`, `Msgcore.dll` and
 `P2PmsgFacade.dll` are built from their own repositories and staged at run time.
 
 ---
@@ -56,7 +56,7 @@ diagnostic. Run on a JDK whose bundled `msvcp140.dll` is **14.40 or newer** —
 crash.
 
 **Generated bindings go stale silently.** Both projects have shipped bindings that
-compiled cleanly while missing entry points the caller needed — TargetCore's covered
+compiled cleanly while missing entry points the caller needed — Targetcore's covered
 72 of 83 for six days, omitting the entire authentication block, and Msgcore's
 `native_` layer was a hand-written stub for months rather than jextract output. Each
 project now has an `AbiCoverage` test that reads the library's own ABI enumeration and
@@ -69,7 +69,7 @@ it is the check that the regeneration was complete.
 
 ```
 MSCS_JavaBindings\
-├── TargetCore\
+├── Targetcore\
 │   ├── README.md                the full story: build, regenerate, lifecycle, auth, sinks
 │   ├── Readme2.md               file-by-file inventory of what was produced
 │   ├── run_all.ps1

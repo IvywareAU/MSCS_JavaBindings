@@ -37,7 +37,7 @@ the two numbers. Two consequences worth naming:
    nobody did. The `toWStr`/`fromWStr` helpers had been written *inside* the file
    jextract replaces wholesale, so a regeneration deleted them. They live in
    `NativeStrings` now, where a regeneration cannot reach them — which is how the
-   TargetCore tree has always had it.
+   Targetcore tree has always had it.
 
 2. **Every write made from Java was silently discarded.** All of `MsgMgr`'s
    convenience methods routed through `asField()`, which the C header describes in
@@ -50,10 +50,10 @@ the two numbers. Two consequences worth naming:
 `AbiCoverage` now exists so the first of those fails loudly. The second is what
 `SmokeTest` asserts.
 
-### A weaker check than TargetCore's, and worth knowing why
+### A weaker check than Targetcore's, and worth knowing why
 
 `AbiCoverage` compares the generated bindings against **`Msgcore_c.h`** — the same
-file jextract reads. TargetCore's equivalent compares against
+file jextract reads. Targetcore's equivalent compares against
 `.github/ci/abi-flat.manifest`, an explicit enumeration that its VERSIONING.md
 makes a promise about. **Msgcore has no such manifest.** A header tells you what
 exists; a manifest tells you what was promised, and only the second can tell you

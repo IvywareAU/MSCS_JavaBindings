@@ -22,7 +22,7 @@ package com.targetcore;
  * uninitialised critical section. Deliberately does NOT call startup.
  *
  *   java --enable-native-access=ALL-UNNAMED
- *        -Djava.library.path=path\to\TargetCore.dll
+ *        -Djava.library.path=path\to\Targetcore.dll
  *        -cp target\classes
  *        com.targetcore.SmokeTestGuard
  */

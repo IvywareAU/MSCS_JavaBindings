@@ -66,7 +66,7 @@ public class SmokeTestAuth {
 
         Path dir = Files.createTempDirectory("p2p-authsmoke-");
         try {
-            TargetCore.startup(16);
+            Targetcore.startup(16);
             try {
                 //  Each phase on its own thread, because the kernel allows one
                 //  hub per thread and closing the first does not release its
@@ -77,7 +77,7 @@ public class SmokeTestAuth {
                 onOwnThread("phase3", () -> phase3Provisioned(dir));
                 onOwnThread("phase4", SmokeTestAuth::phase4SpawnIsGatedToo);
             } finally {
-                TargetCore.cleanup();
+                Targetcore.cleanup();
             }
         } finally {
             deleteTree(dir);

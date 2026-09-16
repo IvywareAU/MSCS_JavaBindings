@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets;
  * <pre>
  *   java --enable-native-access=ALL-UNNAMED -cp target\classes com.targetcore.SmokeTest
  * </pre>
- * with the directory holding {@code TargetCore.dll} and {@code Msgcore.dll} on
+ * with the directory holding {@code Targetcore.dll} and {@code Msgcore.dll} on
  * {@code PATH} — see the README on why {@code -Djava.library.path} is not enough
  * any more.
  *
@@ -72,7 +72,7 @@ public class SmokeTest {
         }
 
         // -- the hub needs the environment --------------------------------------
-        TargetCore.startup(16);
+        Targetcore.startup(16);
         try {
             try (P2PeerHub hub = new P2PeerHub("SmokeHub")) {
 
@@ -101,7 +101,7 @@ public class SmokeTest {
                 hub.closeHub();
             }
         } finally {
-            TargetCore.cleanup();
+            Targetcore.cleanup();
         }
 
         System.out.println(fails == 0 ? "\nSmokeTest passed." : "\nSmokeTest FAILED (" + fails + ")");
