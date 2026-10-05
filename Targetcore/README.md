@@ -399,6 +399,49 @@ for another is not safe against a running pump, so `setSink` refuses to replace 
 
 ---
 
+## Switching to IPv6
+
+TCP is **IPv4 by default**, and nothing changes unless you ask. The family is set on a
+`P2PeerConWsa` **after the factory and before `postConnection`** — a socket that is already open
+keeps its family. Needs Targetcore **3.3.0** or later (`p2peerconwsa_set_family` /
+`_get_family`; `AbiCoverage` fails against an older DLL).
+
+| Constant | A service listens on | A client dials |
+|---|---|---|
+| `FAMILY_IPV4` (default) | `0.0.0.0` | A records only |
+| `FAMILY_IPV6` | `::`, IPv6 only — IPv4 peers refused | AAAA records only |
+| `FAMILY_DUAL` | **one** socket for IPv6 *and* IPv4 peers | AAAA or A, the host's preference |
+
+```java
+// A server reachable over both families on one port.
+P2PeerConWsa svc = P2PeerConWsa.serviceFactory("MyApp.Client", 9000);
+svc.setFamily(P2PeerConWsa.FAMILY_DUAL);
+hub.postConnection(svc, 0);
+
+// A client given an IPv6 LITERAL needs nothing more -- it starts in FAMILY_IPV6.
+hub.postConnection(P2PeerConWsa.clientFactory("MyApp.Server", "::1", 9000), 0);
+
+// A client dialling a NAME stays IPv4 unless told otherwise.
+P2PeerConWsa cli = P2PeerConWsa.clientFactory("MyApp.Server", "server.example", 9000);
+cli.setFamily(P2PeerConWsa.FAMILY_DUAL);   // or FAMILY_IPV6 for AAAA only
+hub.postConnection(cli, 0);
+```
+
+* `setFamily` throws `IllegalArgumentException` for a value outside 0..2 and changes nothing;
+  `family()` reads the current setting back.
+* Pass the bare address to `clientFactory` — `"::1"`, not `"[::1]"`. Brackets belong to URLs and
+  endpoint strings, not to this argument.
+* Allow-lists match only their own family, so add IPv6 prefixes when you turn IPv6 on. The rest
+  of the transport's IPv6 rules are in Targetcore's README, *Switching to IPv6*.
+* Give the link time to log in before posting application messages: one that reaches the service
+  before login completes makes it drop the connection, and a `clientFactory` connection dials once.
+
+`SmokeTestIpv6` runs all of this — a `::1` client starting in IPv6, a refused bad value, a
+message across an IPv6-only link, and an IPv4 client reaching a dual-stack service. It reports
+`SETUP` (exit 2) rather than failing on a host that will not bind `::1`.
+
+---
+
 ## String encoding
 
 The library is built with `UNICODE`, so `TCHAR` is `wchar_t` — UTF-16LE on Windows,
