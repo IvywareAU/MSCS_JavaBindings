@@ -2514,6 +2514,127 @@ public class Targetcore_c extends Targetcore_c$shared {
         }
     }
 
+    private static class p2peerconwsa_set_family {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            Targetcore_c.C_INT,
+            Targetcore_c.C_POINTER,
+            Targetcore_c.C_INT
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_set_family");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerconwsa_set_family(P2PeerConWsaHandle h, int family)
+     * }
+     */
+    public static FunctionDescriptor p2peerconwsa_set_family$descriptor() {
+        return p2peerconwsa_set_family.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerconwsa_set_family(P2PeerConWsaHandle h, int family)
+     * }
+     */
+    public static MethodHandle p2peerconwsa_set_family$handle() {
+        return p2peerconwsa_set_family.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerconwsa_set_family(P2PeerConWsaHandle h, int family)
+     * }
+     */
+    public static MemorySegment p2peerconwsa_set_family$address() {
+        return p2peerconwsa_set_family.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerconwsa_set_family(P2PeerConWsaHandle h, int family)
+     * }
+     */
+    public static int p2peerconwsa_set_family(MemorySegment h, int family) {
+        var mh$ = p2peerconwsa_set_family.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerconwsa_set_family", h, family);
+            }
+            return (int)mh$.invokeExact(h, family);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
+    private static class p2peerconwsa_get_family {
+        public static final FunctionDescriptor DESC = FunctionDescriptor.of(
+            Targetcore_c.C_INT,
+            Targetcore_c.C_POINTER
+        );
+
+        public static final MemorySegment ADDR = SYMBOL_LOOKUP.findOrThrow("p2peerconwsa_get_family");
+
+        public static final MethodHandle HANDLE = Linker.nativeLinker().downcallHandle(ADDR, DESC);
+    }
+
+    /**
+     * Function descriptor for:
+     * {@snippet lang=c :
+     * int p2peerconwsa_get_family(P2PeerConWsaHandle h)
+     * }
+     */
+    public static FunctionDescriptor p2peerconwsa_get_family$descriptor() {
+        return p2peerconwsa_get_family.DESC;
+    }
+
+    /**
+     * Downcall method handle for:
+     * {@snippet lang=c :
+     * int p2peerconwsa_get_family(P2PeerConWsaHandle h)
+     * }
+     */
+    public static MethodHandle p2peerconwsa_get_family$handle() {
+        return p2peerconwsa_get_family.HANDLE;
+    }
+
+    /**
+     * Address for:
+     * {@snippet lang=c :
+     * int p2peerconwsa_get_family(P2PeerConWsaHandle h)
+     * }
+     */
+    public static MemorySegment p2peerconwsa_get_family$address() {
+        return p2peerconwsa_get_family.ADDR;
+    }
+
+    /**
+     * {@snippet lang=c :
+     * int p2peerconwsa_get_family(P2PeerConWsaHandle h)
+     * }
+     */
+    public static int p2peerconwsa_get_family(MemorySegment h) {
+        var mh$ = p2peerconwsa_get_family.HANDLE;
+        try {
+            if (TRACE_DOWNCALLS) {
+                traceDowncall("p2peerconwsa_get_family", h);
+            }
+            return (int)mh$.invokeExact(h);
+        } catch (Error | RuntimeException ex) {
+           throw ex;
+        } catch (Throwable ex$) {
+           throw new AssertionError("should not reach here", ex$);
+        }
+    }
+
     private static class p2peerconwsa_post_msg {
         public static final FunctionDescriptor DESC = FunctionDescriptor.of(
             Targetcore_c.C_POINTER,

@@ -48,6 +48,14 @@ public final class P2PeerConWsa implements AutoCloseable {
     public static final int STATE_LOGIN        = 1 << 5;
     public static final int STATE_CLOSE_ON_IDLE= 1 << 6;
 
+    // -- Address family constants (mirrors P2PeerConFamily_e) -------------------
+    /** AF_INET -- the default for a service, and for a client dialling a name or dotted quad. */
+    public static final int FAMILY_IPV4 = 0;
+    /** AF_INET6 with IPV6_V6ONLY -- the default for a client dialling an IPv6 literal. */
+    public static final int FAMILY_IPV6 = 1;
+    /** One AF_INET6 socket serving both families; a client resolves A or AAAA. */
+    public static final int FAMILY_DUAL = 2;
+
     private MemorySegment handle;
     private boolean closed = false;
 
@@ -117,6 +125,28 @@ public final class P2PeerConWsa implements AutoCloseable {
     public void closeConnection() {
         checkOpen();
         Targetcore_c.p2peerconwsa_close(handle);
+    }
+
+    /**
+     * Chooses the address family: {@link #FAMILY_IPV4}, {@link #FAMILY_IPV6} or
+     * {@link #FAMILY_DUAL}. Call before {@link #listen()} / {@link #connect()} or
+     * before handing the connection to a hub; an open socket keeps its family.
+     * On a client it also decides what the resolver may answer -- A records for
+     * IPv4, AAAA for IPv6, either for Dual. A client made with an IPv6 literal
+     * already starts at {@link #FAMILY_IPV6}.
+     *
+     * @throws IllegalArgumentException for a value outside 0..2
+     */
+    public void setFamily(int family) {
+        checkOpen();
+        if (Targetcore_c.p2peerconwsa_set_family(handle, family) == 0)
+            throw new IllegalArgumentException("not a P2PeerConFamily_e value: " + family);
+    }
+
+    /** The address family this connection opens in; see {@link #setFamily(int)}. */
+    public int family() {
+        checkOpen();
+        return Targetcore_c.p2peerconwsa_get_family(handle);
     }
 
     // ── State queries ─────────────────────────────────────────────────────────

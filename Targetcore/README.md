@@ -214,13 +214,14 @@ jextract ^
   Targetcore_c.h
 ```
 
-The filter should come out at **107 lines: 101 `--include-function` and 6
-`--include-typedef`.** If the function count is not 101, the header and this
+The filter should come out at **109 lines: 103 `--include-function` and 6
+`--include-typedef`.** If the function count is not 103, the header and this
 document have diverged — check the manifest. It was 83 until 2026-08-21, when
 the revocation and sealing defaults added ten entry points (Targetcore
 ProductionPlan.md Stage 3 steps 19 and 20), and 93 until 2026-09-08, when the
 rename brought `targetcore_startup` / `_cleanup` and eight trust and link-policy
-entry points.
+entry points, and 101 until 2026-10-05, when `p2peerconwsa_set_family` /
+`_get_family` exposed IPv6.
 
 That writes four files into `...\native_\`:
 
@@ -446,6 +447,7 @@ child of *addr*, not the other way round. This javadoc had it backwards until
 | `SmokeTestGuard` | `createHub` without `startup` fails cleanly instead of crashing in ntdll | 0/1 |
 | `SmokeTestAuth` | the arm gate: unprovisioned refuses, `requireAuth(false)` runs, provisioning from Java arms it, and `spawnHub` is gated too | 0/1 |
 | `SmokeTestSink` | a delivered message reaches Java, on the pump thread, with its four fields intact, and a throwing handler does not kill the JVM | 0/1/3 |
+| `SmokeTestIpv6` | a `::1` client starts in IPv6, `setFamily` refuses a bad value, a message crosses a v6-only link over `::1`, and an IPv4 client reaches a dual-stack service | 0/1/2/3 |
 
 `SmokeTest` used to print "Smoke test passed." unconditionally. On 2026-08-20 it
 was doing that while printing `Hub created: false` — the hub had stopped starting

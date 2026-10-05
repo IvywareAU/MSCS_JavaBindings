@@ -148,7 +148,8 @@ $tests = @(
     'com.targetcore.SmokeTestU8',
     'com.targetcore.SmokeTestGuard',
     'com.targetcore.SmokeTestAuth',
-    'com.targetcore.SmokeTestSink'
+    'com.targetcore.SmokeTestSink',
+    'com.targetcore.SmokeTestIpv6'
 )
 
 $logs = Join-Path $root 'logs'
